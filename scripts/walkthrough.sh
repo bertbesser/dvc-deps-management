@@ -3,7 +3,7 @@
 # replace with your settings
 export MAIL="bert.besser@codecentric.de"
 export USER="bbesser"
-export GIT_REPO=https://github.com/$USER/dvc-ci-companion.git
+export GIT_REPO=https://github.com/$USER/dvc-deps-management-companion.git
 export REMOTE=s3://dvc-ci.bertatcodecentric.de/dvc-cache
 export AWS_ACCESS_KEY_ID=*****
 export AWS_SECRET_ACCESS_KEY=*****
@@ -103,5 +103,5 @@ dvc metrics show -T
 
 # push git repo to remote, in order to prepare part two of the tutorial
 git remote add origin $GIT_REPO
-git push -u origin master 0.1 0.2 0.3
+git push -u origin master 0.0 0.1 0.2 0.3
 
