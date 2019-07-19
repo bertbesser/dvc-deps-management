@@ -4,9 +4,9 @@
 export MAIL="bert.besser@codecentric.de"
 export USER="bbesser"
 export GIT_REPO=https://github.com/$USER/dvc-deps-management-companion.git
-export REMOTE=s3://dvc-ci.bertatcodecentric.de/dvc-cache
 export AWS_ACCESS_KEY_ID=*****
 export AWS_SECRET_ACCESS_KEY=*****
+export REMOTE=s3://dvc-deps-management.bertatcodecentric.de/dvc-cache
 
 git status # this is not a git repo yet
 
