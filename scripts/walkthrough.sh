@@ -16,6 +16,13 @@ git commit -m "init dvc"
 git tag -a 0.0 -m "freshly initialized with no pipeline defined, yet"
 git status
 
+# setup dvc remote for pushing the cache to
+mkdir /remote/dvc-cache
+dvc remote add -d fake_remote /remote/dvc-cache
+git add .dvc/config # save remote configuration, such that cached data can be pulled from it when your team colleagues checkout the git repo
+git commit -m "configure remote"
+dvc push -v -T # this is where dvc pushes cached data to the remote (for all tags)
+
 # prepare pipeline configuration
 mkdir config
 echo '{ "num_images" : 1000 }' > config/load.json
@@ -39,6 +46,7 @@ git commit -m "init evaluate stage"
 # tag the first pipeline config
 git tag -a 0.1 -m "initial pipeline version 0.1"
 git status
+dvc push -v -T
 
 # you can run this command to display the pipeline in the shell
 # dvc pipeline show --ascii evaluate.dvc
@@ -67,6 +75,7 @@ git add load.dvc train.dvc evaluate.dvc config/load.json model/metrics.json # ve
 git commit -m "0.2 more training data"
 git tag -a 0.2 -m "0.2 more training data"
 git status
+dvc push -v -T
 
 # dummy, for educational purposes ;)
 dvc repro train.dvc # nothing happens, since pipeline was not reconfigured since last commit
@@ -80,16 +89,10 @@ dvc repro evaluate.dvc # only evaluation needs to be performed, since already re
 git add config/load.json config/train.json evaluate.dvc load.dvc train.dvc model/metrics.json
 git commit -m "0.3 more training data, more convolutions"
 git tag -a 0.3 -m "0.3 more training data, more convolutions"
+dvc push -v -T
 
 # compare metrics for all tags, i.e. for all pipeline versions
 dvc metrics show -T
-
-# setup dvc remote for pushing the cache to
-mkdir /remote/dvc-cache
-dvc remote add -d fake_remote /remote/dvc-cache
-git add .dvc/config # save remote configuration, such that cached data can be pulled from it when your team colleagues checkout the git repo
-git commit -m "configure remote"
-dvc push -v -T # this is where dvc pushes cached data to the remote (for all tags)
 
 # push git repo to remote, in order to prepare part two of the tutorial
 git remote add origin /remote/git-repo
