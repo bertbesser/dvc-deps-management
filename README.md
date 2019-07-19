@@ -1,9 +1,7 @@
-# A walkthrough of DVC
+# DVC dependendy management
 
-This is the companion repository for the article [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/).
+This is the companion repository for the article [DVC dependency management](https://blog.codecentric.de/en/????/??/?/).
 
 This repository contains a readily usable development environment for interactively following along with the article.
-To start the development environment, clone this repository and run `./start_environment.sh bash`.
-A Docker image and container will be created and you will be logged in to the container as user `dvc`, in the working folder `/home/dvc/walkthrough`.
-
-From there, you can dive right into the fun!
+It is a follow up of [A walkthrough of DVC](https://github.com/bbesser/dvc-walkthrough) and builds upon it.
+Hence, it is advisable to follow along the walkthrough to get the most out of this article.
