@@ -11,3 +11,4 @@ ipython==7.3.0
 imageio==2.5.0
 gitpython==2.1.11
 git+git://github.com/iterative/dvc@0.52.1
+boto3==1.9.190

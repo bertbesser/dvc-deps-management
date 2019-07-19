@@ -1,10 +1,18 @@
 #!/bin/bash
 
+# replace with your settings
+export MAIL="bert.besser@codecentric.de"
+export USER="bbesser"
+export GIT_REPO=https://github.com/$USER/dvc-ci-companion.git
+export REMOTE=s3://dvc-ci.bertatcodecentric.de/dvc-cache
+export AWS_ACCESS_KEY_ID=*****
+export AWS_SECRET_ACCESS_KEY=*****
+
 git status # this is not a git repo yet
 
 git init # let's make it a git repo
-git config user.email "bert.besser@codecentric.de"
-git config user.name "bbesser"
+git config user.email "$MAIL"
+git config user.name "$USER"
 git add code # prepare initial import
 git commit -m "init repo"
 git status
@@ -17,8 +25,7 @@ git tag -a 0.0 -m "freshly initialized with no pipeline defined, yet"
 git status
 
 # setup dvc remote for pushing the cache to
-mkdir /remote/dvc-cache
-dvc remote add -d fake_remote /remote/dvc-cache
+dvc remote add -d the_remote $REMOTE
 git add .dvc/config # save remote configuration, such that cached data can be pulled from it when your team colleagues checkout the git repo
 git commit -m "configure remote"
 dvc push -v -T # this is where dvc pushes cached data to the remote (for all tags)
@@ -95,11 +102,6 @@ dvc push -v -T
 dvc metrics show -T
 
 # push git repo to remote, in order to prepare part two of the tutorial
-git remote add origin /remote/git-repo
-(mkdir /remote/git-repo && cd /remote/git-repo && git init --bare)
-git push -u origin master
-git push -u origin 0.1
-git push -u origin 0.2
-git push -u origin 0.3
-
+git remote add origin $GIT_REPO
+git push -u origin master 0.1 0.2 0.3
 
