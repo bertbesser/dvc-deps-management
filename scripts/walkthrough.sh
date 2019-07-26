@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # replace with your settings
+# the GIT_REPO and REMOTE S3 must exist and have write permissions enabled
 export MAIL="bert.besser@codecentric.de"
 export USER="bbesser"
 export GIT_REPO=https://github.com/$USER/dvc-deps-management-companion.git
