@@ -1,27 +1,57 @@
-This post is on how to systematially organize Machine Learning (ML) model development. A model's performance improves when, e.g., you tune its parameters or when more training data becomes available. To measure improvement, you should track at least which data was used for training, the model's current definition, model configuration (hyper parameters, etc.), and the achieved model performance. In particular, you should *version* these properties *together*.
+# DVC dependency management
 
-Meet [DVC](https://dvc.org/) (data version control), which supports you with this task, and more.
+This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
+In particular, it is about importing specific versions of a model from one DVC project into another.
 
 ![pipeline](images/logo-owl-readme.png)
 
-Implementing a DVC-*pipeline* makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible (and therefore also allows to automate retraining). Training data, model configuration, the readily trained model, and performance metrics are versioned such that you can conveniently skip back to any given version and inspect all associated configuration and data. Also, DVC provides an overview of metrics for all versions of your pipeline, which helps with identifying your best work. Training data, trained models, performance metrics, etc. are shared with team members to allow for efficient collaboration.
+## The playground
+In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we provided a companion project that showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
+The gist is that DVC versions raw data, (hyper-)parameters, code and trained models _together_.
+In the walkthrough we trained a model to classify hand-written numbers.
+You might want to step through this walkthrough first, such that you can get the most out of this post.
 
-## A toy project
-This post walks you through an example project (available in this GitHub [repository](https://github.com/bbesser/dvc-walkthrough)), in which a neural network is trained to classify images of handwritten digits from the [MNIST data set](http://yann.lecun.com/exdb/mnist/). As the available image set of handwritten digits grows, we retrain the model to improve its accuracy. (Note that, for intuition, in the following figure we depict a much simpler neural network architecture than actually used in the project.)
+[The GitHub repository](https://github.com/bbesser/dvc-deps-management) for this post contains a slightly extended variant of the walkthrough.
+In particular, the DVC project created as part of the walkthrough is pushed to GitHub such that it can easily be referenced as a dependency.
+Moreover, the project's DVC cache is located in an Amazon S3 bucket.
+(The cache contains binary data of trained models, among others.)
+Our goal in this post is to 'import' a model trained in the walkthrough into another DVC project. 
 
-![model](https://blog.codecentric.de/files/2019/03/model.jpg)
-
-To prepare the working environment, clone the above Git repository, change into the cloned directory, and run the `start_environment.sh bash`, see the following code block. The script `start_environment.sh` creates a docker image and container, the `bash` parameter makes the script log you in to the container as user `dvc` in the working folder `/home/dvc/walkthrough`. Commands given throughout this article can be found in the script `/home/dvc/scripts/walkthrough.sh`, also available in the container. (Note: Calling `./start_environment.sh` with the additional parameter `walkthrough` executes the `walkthrough.sh` script before logging you in.)
+To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management)
+, change into the cloned directory, and configure variables at the top of the file `scripts/walkthrough.sh` to match your GitHub repository and S3 bucket (both must be empty and writable).
+Then, start the working environment using `./start_environment.sh bash` and you will be 'logged in' to a newly created container.
+From the container prompt, run `/home/dvc/scripts/walkthrough.sh` to automatically perform all steps from the walkthrough.
+After the walkthrough is finished, the GitHub repository and the S3 bucket will now contain the DVC project and its cache, respectively.
 
 <pre>
 # $ is the host prompt in the cloned folder
 # $$ is the container prompt in the working folder /home/dvc/walkthrough
 
-$ git clone https://github.com/bbesser/dvc-walkthrough
-$ cd dvc-walkthrough
+$ git clone https://github.com/bbesser/dvc-deps-management
+$ cd dvc-deps-management
+$ vi scripts/walkthrough.sh # configure GitHub and S3
 $ ./start_environment.sh bash
-$$ cat /home/dvc/scripts/walkthrough.sh
+$$ /home/dvc/scripts/walkthrough.sh # creates DVC project and its cache
 </pre>
+
+####Setup shortcut
+If you're not having the time to do the walkthrough, you can step into hands-on fun from here and use [this publicly available DVC project](https://github.com/bbesser/dvc-deps-management-companion) as a DVC dependency.
+The S3 bucket for the project's DVC cache is also publicly readable, and is readily configured.
+
+# Notes
+now you can try to `dvc get` as follows
+<pre>
+pip install git+git://github.com/iterative/dvc@0.52.1
+pip install boto3 # for s3 access
+# these credentials allow read access to project's s3 bucket only
+export AWS_ACCESS_KEY_ID=AKIAUTWTWR37V2Q623BI
+export AWS_SECRET_ACCESS_KEY=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
+dvc get --rev 0.3 https://github.com/bbesser/dvc-deps-management-companion.git model/model.h5
+</pre>
+
+Im Artikel wird nur `dvc import` beleuchtet, da es die allgemeinere Variante von `dvc get` ist. `dvc get` wir dann im Abschluss erwaehnt.
+
+# End - old post from here on
 
 ## Prepare the repository
 The working folder `/home/dvc/walkthrough` already contains the subfolder `code` holding the required code. Let us turn `/home/dvc/walkthrough` into a "DVC-enabled" Git repository. DVC is built on top of Git. All DVC configuration is versioned in the same Git repository as your model code, in the subfolder `.dvc`, see the following code block. Note that tagging this freshly initialized repository is not a must&mdash;we create a tag only for the purpose of later parts of this walkthrough.
