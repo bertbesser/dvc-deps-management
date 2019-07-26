@@ -9,13 +9,11 @@ In particular, it is about importing specific versions of a model from one DVC p
 In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we provided a companion project that showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
 The gist is that DVC versions raw data, (hyper-)parameters, code and trained models _together_.
 In the walkthrough we trained a model to classify hand-written numbers.
-You might want to step through this walkthrough first, such that you can get the most out of this post.
+You might want to step through the walkthrough first, such that you can get the most out of this post.
 
 [The GitHub repository](https://github.com/bbesser/dvc-deps-management) for this post contains a slightly extended variant of the walkthrough.
 In particular, the DVC project created as part of the walkthrough is pushed to GitHub such that it can easily be referenced as a dependency.
 Moreover, the project's DVC cache is located in an Amazon S3 bucket.
-(The cache contains binary data of trained models, among others.)
-Our goal in this post is to 'import' a model trained in the walkthrough into another DVC project. 
 
 To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management)
 , change into the cloned directory, and configure variables at the top of the file `scripts/walkthrough.sh` to match your GitHub repository and S3 bucket (both must be empty and writable).
@@ -39,7 +37,7 @@ If you're not having the time to do the walkthrough, you can step into hands-on 
 The S3 bucket for the project's DVC cache is also publicly readable, and is readily configured.
 
 # Notes
-now you can try to `dvc get` as follows
+now you can try `dvc get` as follows
 <pre>
 pip install git+git://github.com/iterative/dvc@0.52.1
 pip install boto3 # for s3 access
