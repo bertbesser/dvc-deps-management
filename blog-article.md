@@ -39,12 +39,15 @@ The S3 bucket for the project's DVC cache is also publicly readable, and is read
 # Notes
 now you can try `dvc get` as follows
 <pre>
+virtualenv tmpvenv
+source tmpvenv/bin/activate
 pip install git+git://github.com/iterative/dvc@0.52.1
 pip install boto3 # for s3 access
 # these credentials allow read access to project's s3 bucket only
 export AWS_ACCESS_KEY_ID=AKIAUTWTWR37V2Q623BI
 export AWS_SECRET_ACCESS_KEY=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
 dvc get --rev 0.3 https://github.com/bbesser/dvc-deps-management-companion.git model/model.h5
+ls model.h5
 </pre>
 
 Im Artikel wird nur `dvc import` beleuchtet, da es die allgemeinere Variante von `dvc get` ist. `dvc get` wir dann im Abschluss erwaehnt.
