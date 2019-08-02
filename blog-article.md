@@ -8,7 +8,9 @@ In particular, this follow up is about importing specific versions of a model fr
 
 ![pipeline](images/logo-owl-readme.png)
 
-After a quick recap of the original walkthrough, in the first part of this article we setup a playground project, which you can use to try out DVC hands-on in the second part.
+After a quick recap of the original walkthrough, in the first part of this article we created an example project, which you can use as a DVC-dependendy hands-on in the second part.
+(Note that, for those of you in a hurry, part one can be skipped.
+A publicly accessible example project is provided, such that you can step right into the hands-on fun in part two.)
 
 ## Recap of the original walkthrough
 In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a model to classify hand-written numbers.
@@ -79,9 +81,29 @@ dvc remote add -d the_remote s3://YOUR_BUCKET_NAME
 git add .dvc/config # save remote configuration, such that cached data can be pulled from your new remote when your team colleagues checkout the git repo
 ```
 
-### Shortcut for the setup
-If you're not having the time to execute the extended walkthrough, you can step into hands-on fun from here and use [this publicly available DVC project](https://github.com/bbesser/dvc-deps-management-companion) as a DVC dependency.
-The S3 remote for the project's DVC cache is also publicly readable, and is readily configured.
+## Using a DVC project as a dependency
+If you're not having the time to execute the extended walkthrough, you can step into hands-on fun from here.
+[This publicly available DVC project](https://github.com/bbesser/dvc-deps-management-companion) was created by the extended walkthrough and can be used as a DVC dependency.
+The S3 remote for the project's DVC cache is publicly readable.
+
+### dvc get and dvc import
+
+We discuss how to access a DVC project's _outputs_.
+An output is some (possibly binary) file created by the pipeline defined in the project.
+To be precise, an output file is created by some stage of the pipeline, e.g. the training stage creates a trained model as output.
+Recall that the pipeline and its output file are versioned.
+Consequently, any version of any output file can be accessed.
+
+We present two ways to access an output, namely `dvc get` and `dvc import`.
+Intuitively, `dvc get` simply 'downloads' an output file.
+`dvc import` downloads an output file and additionally considers what version was fetched.
+
+TODO (package management, ci) 
+
+### dvc get
+
+TODO
+
 
 # Notes
 now you can try `dvc get` as follows
