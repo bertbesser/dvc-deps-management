@@ -1,3 +1,6 @@
+# TODO
+- clarify usages of terms `cache` and `remote`
+
 # DVC dependency management
 
 This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
@@ -7,18 +10,20 @@ In particular, it is about importing specific versions of a model from one DVC p
 
 ## The playground
 In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we provided a companion project that showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
-The gist is that DVC versions raw data, (hyper-)parameters, code and trained models _together_.
+The gist is that DVC versions training data, (hyper-)parameters, code and trained models _together_.
 In the walkthrough we trained a model to classify hand-written numbers.
 You might want to step through the walkthrough first, such that you can get the most out of this post.
 
-[The GitHub repository](https://github.com/bbesser/dvc-deps-management) for this post contains a slightly extended variant of the walkthrough.
-In particular, the DVC project created as part of the walkthrough is pushed to GitHub such that it can easily be referenced as a dependency.
-Moreover, the project's DVC cache is located in an Amazon S3 bucket.
+[The GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now contains a slightly extended variant of the walkthrough.
+In particular, the GitHub repository contains a readily usable working environment in which you can follow along interactively.
+To prepare the article you are reading now, extensions to the original walkthrough are the following.
+First, the created DVC project is pushed to GitHub such that it can easily be referenced as a DVC-dependency.
+Secondly, the project's DVC cache is now located in an Amazon S3 bucket (see section [Configuring the S3 remote](#s3remote)), such that binary data (e.g. trained models) can also be accessed from the internet.
 
-To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management)
-, change into the cloned directory, and configure variables at the top of the file `scripts/walkthrough.sh` to match your GitHub repository and S3 bucket (both must be empty and writable).
-Then, start the working environment using `./start_environment.sh bash` and you will be 'logged in' to a newly created container.
-From the container prompt, run `/home/dvc/scripts/walkthrough.sh` to automatically perform all steps from the walkthrough.
+To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management), change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
+You will be 'logged in' to a newly created container.
+From the prompt in the container, onfigure variables at the top of the file `/home/dvc/scripts/walkthrough.sh` to match your GitHub repository and S3 bucket (both must be empty and writable).
+Then, you might want to run `/home/dvc/scripts/walkthrough.sh` to automatically perform all steps from the extended walkthrough.
 After the walkthrough is finished, the GitHub repository and the S3 bucket will now contain the DVC project and its cache, respectively.
 
 <pre>
@@ -32,9 +37,30 @@ $ ./start_environment.sh bash
 $$ /home/dvc/scripts/walkthrough.sh # creates DVC project and its cache
 </pre>
 
-####Setup shortcut
+#### Setup shortcut
 If you're not having the time to do the walkthrough, you can step into hands-on fun from here and use [this publicly available DVC project](https://github.com/bbesser/dvc-deps-management-companion) as a DVC dependency.
 The S3 bucket for the project's DVC cache is also publicly readable, and is readily configured.
+
+## <a name="s3remote"></a>Configuring the S3 remote
+Adding an S3 bucket as cache to a DVC project is the same as adding any other type of cache (see the following code block).
+From the given URI, DVC knows that the cache should reside in a bucket.
+The `-d` flag tells DVC that this cache should be used by default.
+Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to git.
+
+```
+dvc remote add -d the_remote s3://YOUR_BUCKET_NAME
+git add .dvc/config # save remote configuration, such that cached data can be pulled from it when your team colleagues checkout the git repo
+```
+
+Note that, in order to enable DVC to 'talk' to the bucket, two preparations have to be done.
+1. First, the `boto3` library must be installed, using `pip install boto3` .
+1. Secondly, `boto3` must be given access to the bucket.
+Therefore, AWS credentials can be provided as environment variables like so (other means of configuring access are [available](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html)):
+```
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+# from here on, DVC can interact with your bucket 
+``` 
 
 # Notes
 now you can try `dvc get` as follows
@@ -45,7 +71,7 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 pip install boto3 # for s3 access
 # these credentials allow read access to project's s3 bucket only
 export AWS_ACCESS_KEY_ID=AKIAUTWTWR37V2Q623BI
-export AWS_SECRET_ACCESS_KEY=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
+export AWS_SECRET_ACCESS_KEY=EyZt43a84c [Compare versions](#compare-versions)YzAngl/mLRwlCU7YAUB6iMInFhlc1M
 dvc get --rev 0.3 https://github.com/bbesser/dvc-deps-management-companion.git model/model.h5
 ls model.h5
 </pre>
