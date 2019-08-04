@@ -16,9 +16,9 @@ I.e., using `dvc import` you can manage artifacts from another DVC project like 
 
 You might want to browse through the walkthrough first, such that you can get the most out of this post.
 For those of you in a hurry, we provide a quick [recap of the original walkthrough](#recap).
-In the first part of this article we create an example project which we use as a DVC-dependency hands-on in the second part.
+In the first part of this article we create a playground project which we use as a DVC-dependency hands-on in the second part.
 If you're in a hurry, still, note that part one can be skipped.
-A publicly accessible example project is provided, such that you can step right into the hands-on fun in part two.
+A publicly accessible playground project is provided, such that you can step right into the hands-on fun in part two.
 
 A real world application of `dvc get` and `dvc import` will be discussed in an upcoming post. So stay tuned for more :-D
 
@@ -26,14 +26,10 @@ A real world application of `dvc get` and `dvc import` will be discussed in an u
 In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a classifier for hand-written numbers.
 The walkthrough showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
 The gist is that DVC _versions_ training data, (hyper-)parameters, code and trained models _together_.
-In particular, a DVC project builds on top of a Git repository, which implements all necessary versioning.
-
-For those of you in a hurry, here is a quick summary of the walkthrough.
-We create an ML pipeline to classify hand-written numbers.
-The definition of the pipeline is versioned in the Git repository in which the DVC project resides (see the following figure).
+In particular, a DVC project resides in a Git repository, which implements all necessary versioning (see the following figure).
 Binary data, such as e.g. training data and trained models, are located in DVC's so-called cache.
 In particular, for each version of the pipeline, the cache contains different versions of all binary data.
-However, cache data is _not_ stored in the Git repository itself, but in a so-called remote, which resides outside of the Git repository.
+However, cache data is _not_ stored in the Git repository itself, but in a separate so-called remote.
 When checking out a specific version of the pipeline from the Git repository, DVC takes care of fetching cache data from the remote that matches the current pipeline version.
 
 ![dvc remote](https://blog.codecentric.de/files/2019/03/dvc_remote.jpg)
@@ -41,38 +37,37 @@ When checking out a specific version of the pipeline from the Git repository, DV
 ## Creating the playground
 
 As for the original walkthrough, [the GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now provides a readily usable working environment.
-In this environment, you can interactively create the number classifier project (or let a script perform all actions for you).
+In this environment, you can interactively create the playground number classifier project (or let a script perform all actions for you).
 Compared to the original walkthrough, the following extensions were implemented.
-First, the created DVC project is pushed to GitHub such that it can easily be referenced as a DVC-dependency.
-Secondly, the project's DVC cache is now pushed to a remote in an Amazon S3 bucket, such that binary data (e.g. trained models) can also be accessed from the internet.
+First, the playground project is pushed to GitHub such that it can easily be referenced as a DVC-dependency.
+Secondly, the playground's DVC cache is now pushed to a remote in an Amazon S3 bucket, such that binary data (e.g. trained models) can also be accessed from the internet.
 
-[The GitHub repository](https://github.com/bbesser/dvc-deps-management) contains a readily usable working environment in which you can execute the extended walkthrough.
 To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management), change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
 You will be 'logged in' to a newly created container.
-From the prompt in the container, onfigure variables at the top of the file `/home/dvc/scripts/walkthrough.sh` to match your GitHub repository and S3 bucket, where both must be empty and writable.
+From the prompt in the container, configure variables at the top of the file `/home/dvc/scripts/walkthrough.sh` to match your GitHub repository and S3 bucket, where both must be empty and writable.
 (Details of the bucket configuration are discussed in section [Configuring the S3 remote](#s3remote).)
-Then, you might want to run `/home/dvc/scripts/walkthrough.sh` to automatically perform all steps from the extended walkthrough.
-After this is finished, the GitHub repository and the S3 bucket will now contain the DVC project and its cache, respectively.
+Then, to automatically perform all steps from the extended walkthrough, you might want to execute `/home/dvc/scripts/walkthrough.sh`.
+After the script is finished, the GitHub repository and the S3 bucket will now contain the playground DVC project and its cache, respectively.
 
 <pre>
-# $ is the host prompt in the cloned folder
-# $$ is the container prompt in the working folder /home/dvc/walkthrough
+# $ is the host prompt
+# $$ is the working environment container prompt
 
 $ git clone https://github.com/bbesser/dvc-deps-management
 $ cd dvc-deps-management
-$ vi scripts/walkthrough.sh # configure GitHub and S3
-$ ./start_environment.sh bash
-$$ /home/dvc/scripts/walkthrough.sh # creates DVC project and its cache
+$ vi scripts/walkthrough.sh # configure GitHub and S3 at the top
+$ ./start_environment.sh bash # create and 'log in' to working environment
+$$ /home/dvc/scripts/walkthrough.sh # creates the playground DVC project and its cache
 </pre>
 
 ### <a name="s3remote"></a>Configuring the S3 remote
-In this section, we take a quick look at the part of the `walkthrough.sh` script that sets up an S3 bucket as the DVC-cache's remote.
+In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC-cache's remote.
 
 In order to enable DVC to access a bucket, two preparations have to be done.
 1. First, the `boto3` library must be installed, using `pip install boto3`. (This is already done in the working environment provided with this article.)
 1. Secondly, `boto3` must be given access to the bucket.
 Therefore, AWS credentials can be provided as environment variables like in the following code block.
-(For the provided working environment, this configuration has to be done at the top of the `walkthrough.sh` script.)
+(For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough.sh` script.)
 ```
 export AWS_ACCESS_KEY_ID=...
 export AWS_SECRET_ACCESS_KEY=...
@@ -80,14 +75,14 @@ export AWS_SECRET_ACCESS_KEY=...
 ``` 
 Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
 
-Adding an S3 bucket as remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough.sh`).
-From the given URI, DVC knows that the remote should reside in a bucket.
+Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough.sh`).
+Since the given URI start with `s3://`, DVC knows that the remote should reside in a bucket.
 The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
 ```
-dvc remote add -d the_remote s3://YOUR_BUCKET_NAME
-git add .dvc/config # save remote configuration, such that cached data can be pulled from your new remote when your team colleagues checkout the git repo
+dvc remote add -d name_of_the_remote s3://YOUR_BUCKET_NAME
+git add .dvc/config # save the configuration of the newly added remote
 ```
 
 ## Using a DVC project as a dependency
