@@ -4,28 +4,37 @@
 # DVC dependency management
 
 This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
-In particular, this follow up is about importing specific versions of a model from one DVC project into another.
+In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model) from one DVC project into another.
+
+We discuss two _brand-new_ DVC features, namely `dvc get` and `dvc import`.
+- Intuitively, `dvc get` downloads an artifact from a DVC project (where DVC takes care of resolving the project's DVC cache and its remotes).
+ E.g., `dvc get` is a very helpful tool in delivering your model to production in a CI/CD pipeline.
+- Think of `dvc import` as `dvc get` plus managing version information for the downloaded artifact.
+I.e., using `dvc import` you can manage artifacts from another DVC project like you would manage a software library dependency in a software engineering project.
 
 ![pipeline](images/logo-owl-readme.png)
 
-After a quick recap of the original walkthrough, in the first part of this article we created an example project, which you can use as a DVC-dependendy hands-on in the second part.
-(Note that, for those of you in a hurry, part one can be skipped.
-A publicly accessible example project is provided, such that you can step right into the hands-on fun in part two.)
+You might want to browse through the walkthrough first, such that you can get the most out of this post.
+For those of you in a hurry, we provide a quick [recap of the original walkthrough](#recap).
+In the first part of this article we create an example project which we use as a DVC-dependency hands-on in the second part.
+If you're in a hurry, still, note that part one can be skipped.
+A publicly accessible example project is provided, such that you can step right into the hands-on fun in part two.
 
-## Recap of the original walkthrough
-In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a model to classify hand-written numbers.
+A real world application of `dvc get` and `dvc import` will be discussed in an upcoming post. So stay tuned for more :-D
+
+## <a name="recap"></a>Recap of the original walkthrough
+In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a classifier for hand-written numbers.
 The walkthrough showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
 The gist is that DVC _versions_ training data, (hyper-)parameters, code and trained models _together_.
-In particular, a DVC project builds on top of a git repository, which implements all necessary versioning.
+In particular, a DVC project builds on top of a Git repository, which implements all necessary versioning.
 
-You might want to browse through the walkthrough first, such that you can get the most out of this post.
 For those of you in a hurry, here is a quick summary of the walkthrough.
 We create an ML pipeline to classify hand-written numbers.
-The definition of the pipeline is versioned in the git repository in which the DVC project resides (see the following figure).
+The definition of the pipeline is versioned in the Git repository in which the DVC project resides (see the following figure).
 Binary data, such as e.g. training data and trained models, are located in DVC's so-called cache.
 In particular, for each version of the pipeline, the cache contains different versions of all binary data.
-However, cache data is _not_ stored in the git repository itself, but in a so-called remote, which resides outside of the git repository.
-When checking out a specific version of the pipeline from the git repository, DVC takes care of fetching cache data from the remote that matches the current pipeline version.
+However, cache data is _not_ stored in the Git repository itself, but in a so-called remote, which resides outside of the Git repository.
+When checking out a specific version of the pipeline from the Git repository, DVC takes care of fetching cache data from the remote that matches the current pipeline version.
 
 ![dvc remote](https://blog.codecentric.de/files/2019/03/dvc_remote.jpg)
 
@@ -74,7 +83,7 @@ Other means of configuring S3 bucket access for DVC/`boto3` are [documented here
 Adding an S3 bucket as remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough.sh`).
 From the given URI, DVC knows that the remote should reside in a bucket.
 The `-d` flag tells DVC that this remote should be used by default.
-Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to git.
+Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
 ```
 dvc remote add -d the_remote s3://YOUR_BUCKET_NAME
