@@ -188,6 +188,7 @@ deps:
 
 Observe that, following the DVC approach, the binary file `model.h5` is not committed to the Git repository.
 Instead, the dependency is managed by committing `model.h5.dvc` to our project.
+Following the convention that `.dvc` files represent _stages_ of the pipeline, a `.dvc` file for an import is called an _import stage_.
 
 <pre>
 $$ git status # model.h5 is not listed as untracked ...
@@ -198,6 +199,19 @@ $$ cat .gitignore # ... since it's ignored
 $$ git add model.h5.dvc .gitignore
 $$ git commit -m 'add model.h5 (version 0.1) as dependency'
 $$ git tag v0.0.1
+</pre>
+
+As time goes by and you develop your project, a new version of the dependency becomes available.
+Updating to the new version is easy:
+
+<pre>
+$$ dvc import --rev 0.2 $GIT_REPO model/model.h5
+$$ # the file model.h5 now contains the newer version of the model
+$$ git status
+    modified:   model.h5.dvc
+$$ git add model.h5.dvc
+$$ git commit -m 'update model.h5 to version 0.2'
+$$ git tag v0.0.2 # version 0.0.2 of our project uses version 0.2 of model.h5
 </pre>
 
 #### Cloning a Project with DVC Dependencies
@@ -212,14 +226,17 @@ $$ ls
 model.h5.dvc # the model is not part of the git repository
 </pre>
 
+But without the correct dependency in place, `dvc repro` might fail.
 How does she obtain `model.h5`?
-Meet `dvc update`, which takes care of updating a dependency to the version given in its `.dvc`-file.
+Meet `dvc update`, which takes care of updating an import stage to the version given in its `.dvc` file.
 
 <pre>
 $$ dvc update model.h5.dvc
 $$ ls
 model.h5  model.h5.dvc # dvc update downloads version 0.1 of model.h5
 </pre>
+
+TODO: switch between 0.0.2 and 0.0.1 and updating model.h5 accordingly
 
 # Notes
 
@@ -237,3 +254,4 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 
 # TODO
 - clarify usages of terms `cache` and `remote`
+- use _import stage_ where appropriate
