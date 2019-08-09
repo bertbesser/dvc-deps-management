@@ -1,4 +1,4 @@
-# DVC dependency management
+# DVC Dependency Management
 
 This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
 In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model) from one DVC project into another.
@@ -19,7 +19,7 @@ A publicly accessible playground project is provided, such that you can step rig
 
 A real world application of `dvc get` and `dvc import` will be discussed in an upcoming post. So stay tuned for more :-D
 
-## <a name="recap"></a>Recap of the original walkthrough
+## <a name="recap"></a>Recap of the Original Walkthrough
 In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a classifier for hand-written numbers.
 The walkthrough showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
 The gist is that DVC _versions_ training data, (hyper-)parameters, code and trained models _together_.
@@ -31,7 +31,7 @@ When checking out a specific version of the pipeline from the Git repository, DV
 
 ![dvc remote](https://blog.codecentric.de/files/2019/03/dvc_remote.jpg)
 
-## <a name="createplayground"></a>Creating the playground
+## <a name="createplayground"></a>Creating the Playground
 
 As for the original walkthrough, [the GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now provides a readily usable working environment.
 In this environment, you can interactively create the playground number classifier project (or let a script perform all actions for you).
@@ -57,7 +57,7 @@ $ ./start_environment.sh bash # create and 'log in' to working environment
 $$ /home/dvc/scripts/walkthrough.sh # creates the playground DVC project and its cache
 </pre>
 
-### <a name="s3remote"></a>Configuring the S3 remote
+### <a name="s3remote"></a>Configuring the S3 Remote
 In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC-cache's remote.
 
 In order to enable DVC to access a bucket, two preparations have to be done.
@@ -82,7 +82,7 @@ $$ dvc remote add -d name_of_the_remote s3://YOUR_BUCKET_NAME
 $$ git add .dvc/config # save the configuration of the newly added remote
 </pre>
 
-## Using a DVC project as a dependency
+## Using a DVC Project as a Dependency
 We discuss how to access a DVC project's _outputs_.
 An output is some (possibly binary) file created by the pipeline defined in the project.
 To be precise, an output file is created by some stage of the pipeline, e.g. the training stage creates a trained model as output.
@@ -121,7 +121,7 @@ In the following example, we download version 0.3 of the trained model from the 
 $$ # replace with your playground GitHub repo (if any)
 $$ GIT_REPO=https://github.com/bbesser/dvc-deps-management-companion.git
 
-$$ dvc get --rev 0.3 $GIT_REPO model/model.h5
+$$ dvc get --rev 0.1 $GIT_REPO model/model.h5
 $$ ls
 model.h5 # no other file was downloaded
 </pre>
@@ -144,25 +144,87 @@ remote = the_remote
 # file train.dvc
 # [...]
 outs:
-- md5: 1997a2adc3fdbc8ef670efcff8f524a3
+- md5: 1042d7fd78dd740019699eaaefd1822f
   path: model/model.h5
   cache: true
   metric: false
   persist: false
 </pre> 
 
-From there, DVC can deduct that it should a file with md5 sum `1997a2adc3fdbc8ef670efcff8f524a3` from the given remote S3 bucket.
+From there, DVC can deduct that it should a file with md5 sum `1042d7fd78dd740019699eaaefd1822f` from the given remote S3 bucket.
 
 ![dvc get](images/download_from_cache.png)
 
 ### dvc import
 
-TODO package management 
+`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC outputs.
+The project that receives imports must itself be a DVC project (although it does not have to be an ML project).
+This way, DVC is able to track the desired version of a dependency.
+
+Here is an example of creating a new project with a dependency to a DVC artifact, namely `model.h5`.
+<pre>
+$$ git init
+$$ dvc init
+$$ git add .
+$$ git commit -m 'initialize repository'
+$$ dvc import --rev 0.1 $GIT_REPO model/model.h5
+
+$$ # besides downloading the artifact,
+$$ # dvc also stores some versioning information ...
+$$ ls
+model.h5  model.h5.dvc
+
+$$ # ... which contains the 'source' of the artifact
+$$ cat model.h5.dvc
+[...]
+deps:
+- repo:
+    url: https://github.com/bbesser/dvc-deps-management-companion.git
+    [...]
+    rev: '0.1'
+  path: model/model.h5
+[...]
+</pre>
+
+Observe that, following the DVC approach, the binary file `model.h5` is not committed to the Git repository.
+Instead, the dependency is managed by committing `model.h5.dvc` to our project.
+
+<pre>
+$$ git status # model.h5 is not listed as untracked ...
+    .gitignore
+    model.h5.dvc
+$$ cat .gitignore # ... since it's ignored
+/model.h5
+$$ git add model.h5.dvc .gitignore
+$$ git commit -m 'add model.h5 (version 0.1) as dependency'
+$$ git tag v0.0.1
+</pre>
+
+#### Cloning a Project with DVC Dependencies
+
+In the project created in the previous section, the Git repository does not contain the binary file `model.h5`.
+So, if one of your team members clones this project, she will not receive `model.h5`.
+
+<pre>
+$$ git clone ...@v0.0.1
+$$ cd ...@v0.0.1
+$$ ls
+model.h5.dvc # the model is not part of the git repository
+</pre>
+
+How does she obtain `model.h5`?
+Meet `dvc update`, which takes care of updating a dependency to the version given in its `.dvc`-file.
+
+<pre>
+$$ dvc update model.h5.dvc
+$$ ls
+model.h5  model.h5.dvc # dvc update downloads version 0.1 of model.h5
+</pre>
 
 # Notes
 
 <sup>1</sup><a name="footnote1"></a> If `dvc get` and `dvc import` are not available in your DVC version, you can try a recent development version of DVC like so:
-```
+<pre>
 # create sandbox for recent DVC version
 pip install virtualenv # if not already installed
 cd /tmp
@@ -171,7 +233,7 @@ virtualenv sandbox
 # open sandbox and install recent DVC version into it
 source sandbox/bin/activate
 pip install git+git://github.com/iterative/dvc@0.52.1
-```
+</pre>
 
 # TODO
 - clarify usages of terms `cache` and `remote`
