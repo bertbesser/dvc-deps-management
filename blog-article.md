@@ -65,11 +65,11 @@ In order to enable DVC to access a bucket, two preparations have to be done.
 1. Secondly, `boto3` must be given access to the bucket.
 Therefore, AWS credentials can be provided as environment variables like in the following code block.
 (For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough.sh` script.)
-```
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
-# from here on, DVC can interact with your bucket 
-``` 
+<pre>
+$$ export AWS_ACCESS_KEY_ID=...
+$$ export AWS_SECRET_ACCESS_KEY=...
+$$ # from here on, DVC can interact with your bucket 
+</pre>
 Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
 
 Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough.sh`).
@@ -77,10 +77,10 @@ Since the given URI start with `s3://`, DVC knows that the remote should reside 
 The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
-```
-dvc remote add -d name_of_the_remote s3://YOUR_BUCKET_NAME
-git add .dvc/config # save the configuration of the newly added remote
-```
+<pre>
+$$ dvc remote add -d name_of_the_remote s3://YOUR_BUCKET_NAME
+$$ git add .dvc/config # save the configuration of the newly added remote
+</pre>
 
 ## Using a DVC project as a dependency
 We discuss how to access a DVC project's _outputs_.
@@ -102,11 +102,11 @@ All commands discussed from here on are also available in `/home/dvc/scripts/dep
 To enable DVC to access the playground project, recall that DVC needs to know its GitHub repository's URL.
 Also, cache data is located in an S3 bucket and read access to that bucket must be provided.
 Configure your environment as follows:
-```bash
-export GIT_REPO=<your_playground_repo_url>
-export AWS_ACCESS_KEY_ID=<your_playground_key>
-export AWS_SECRET_ACCESS_KEY=<your_playground_secret>
-```
+<pre>
+$$ export GIT_REPO=<your_playground_repo_url>
+$$ export AWS_ACCESS_KEY_ID=<your_playground_key>
+$$ export AWS_SECRET_ACCESS_KEY=<your_playground_secret>
+</pre>
 If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-companion).
 Its URL and credentials are readily configured in `/home/dvc/scripts/deps_management.sh`.
 (Note that the given AWS credentials provide no permissions except read access to the S3 bucket that serves a the DVC cache's remote.)
@@ -114,12 +114,46 @@ Its URL and credentials are readily configured in `/home/dvc/scripts/deps_manage
 
 ### dvc get
 
-If
+When getting an output from a DVC project, DVC takes care of 'downloading' the desired version from the file.
+In the following example, we download version 0.3 of the trained model from the playground project.
 
-```bash
-dvc get --rev 0.3 https://github.com/bbesser/dvc-deps-management-companion.git model/model.h5
-ls model.h5
-```
+<pre>
+$$ # replace with your playground GitHub repo (if any)
+$$ GIT_REPO=https://github.com/bbesser/dvc-deps-management-companion.git
+
+$$ dvc get --rev 0.3 $GIT_REPO model/model.h5
+$$ ls
+model.h5 # no other file was downloaded
+</pre>
+
+In particular, observe that no file was downloaded besides `model.h5`.
+Consequently, there is no way for DVC to tell which version of `model.h5` is in your file system.
+Hence, issuing the same `dvc get` command again, `model.h5` will be downloaded _again_.
+
+Recall that the file `model.h5` is not part of the Git repository of the DVC project.
+Transparently, DVC takes care of resolving the remote of the cache of your project, and downloads files from there.
+In our example, DVC inspects the following files in the tag 0.3 of `$GIT_REPO`:
+
+<pre>
+# file .dvc/cache
+['remote "the_remote"']
+url = s3://dvc-deps-management.bertatcodecentric.de/dvc-cache
+[core]
+remote = the_remote
+
+# file train.dvc
+# [...]
+outs:
+- md5: 1997a2adc3fdbc8ef670efcff8f524a3
+  path: model/model.h5
+  cache: true
+  metric: false
+  persist: false
+</pre> 
+
+From there, DVC can deduct that it should a file with md5 sum `1997a2adc3fdbc8ef670efcff8f524a3` from the given remote S3 bucket.
+
+![dvc get](images/download_from_cache.png)
 
 ### dvc import
 
