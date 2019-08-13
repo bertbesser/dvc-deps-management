@@ -257,6 +257,13 @@ Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/d
 [...]
 </pre>
 
+# Wrap-up
+We introduced you to the DVC commands `get`, `import`, and `update` which allow you manage artifacts from a DVC project as dependencies.
+While `get` simply downloads an artifact, `import` and `update` enable you to track the version of the dependency in your software project.
+
+In an upcoming post, we demo these features in a real world application.
+We're happy to meet you there :-D
+
 # Notes
 
 <sup>1</sup><a name="footnote1"></a> If `dvc get` and `dvc import` are not available in your DVC version, you can try a recent development version of DVC like so:
