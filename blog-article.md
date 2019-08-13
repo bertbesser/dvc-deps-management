@@ -131,7 +131,7 @@ Consequently, there is no way for DVC to tell which version of `model.h5` is in 
 Hence, issuing the same `dvc get` command again, `model.h5` will be downloaded _again_.
 
 Recall that the file `model.h5` is not part of the Git repository of the DVC project.
-Transparently, DVC takes care of resolving the remote of the cache of your project, and downloads files from there.
+To download the file, DVC transparently resolves the remote of the cache of your project, see the following figure.
 In our example, DVC inspects the following files in the tag 0.3 of `$GIT_REPO`:
 
 <pre>
@@ -151,15 +151,15 @@ outs:
   persist: false
 </pre> 
 
-From there, DVC can deduct that it should a file with md5 sum `1042d7fd78dd740019699eaaefd1822f` from the given remote S3 bucket.
+From there, DVC deducts that `model.h5` is a file with md5 sum `1042d7fd78dd740019699eaaefd1822f` in the given remote S3 bucket.
 
 ![dvc get](images/download_from_cache.png)
 
 ### dvc import
 
-`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC outputs.
-The project that receives imports must itself be a DVC project (although it does not have to be an ML project).
-This way, DVC is able to track the desired version of a dependency.
+`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC artifacts.
+The project that receives an import must itself be a DVC project (although it does not have to be an ML project).
+This way, DVC is able to track the desired version of a dependency as the software project evolves over time.
 
 Here is an example of creating a new project with a dependency to a DVC artifact, namely `model.h5`.
 <pre>
@@ -186,9 +186,9 @@ deps:
 [...]
 </pre>
 
-Observe that, following the DVC approach, the binary file `model.h5` is not committed to the Git repository.
-Instead, the dependency is managed by committing `model.h5.dvc` to our project.
-Following the convention that `.dvc` files represent _stages_ of the pipeline, a `.dvc` file for an import is called an _import stage_.
+Observe that, following the DVC approach, the imported binary file `model.h5` will not be committed to the Git repository.
+Instead, the dependency is managed by committing the DVC file `model.h5.dvc` to our project.
+Following the naming convention that `.dvc` files represent _stages_ of a pipeline, a `.dvc` file for an import is called an _import stage_.
 
 <pre>
 $$ git status # model.h5 is not listed as untracked ...
@@ -201,11 +201,11 @@ $$ git commit -m 'add model.h5 (version 0.1) as dependency'
 $$ git tag v0.0.1
 </pre>
 
-As time goes by and you develop your project, a new version of the dependency becomes available.
+As time goes by and your project evolves, a new version of the dependency becomes available.
 Updating to the new version is easy:
 
 <pre>
-$$ dvc import --rev 0.2 $GIT_REPO model/model.h5
+$$ dvc import --rev 0.2 $GIT_REPO model/model.h5 # bump revision to 0.2
 $$ # the file model.h5 now contains the newer version of the model
 $$ git status
     modified:   model.h5.dvc
@@ -220,8 +220,7 @@ In the project created in the previous section, the Git repository does not cont
 So, if one of your team members clones this project, she will not receive `model.h5`.
 
 <pre>
-$$ git clone ...@v0.0.1
-$$ cd ...@v0.0.1
+$$ # checkout tag v0.0.1 of the software project
 $$ ls
 model.h5.dvc # the model is not part of the git repository
 </pre>
@@ -233,9 +232,31 @@ Meet `dvc update`, which takes care of updating an import stage to the version g
 <pre>
 $$ dvc update model.h5.dvc
 $$ ls
-model.h5  model.h5.dvc # dvc update downloads version 0.1 of model.h5
+model.h5  model.h5.dvc # dvc update downloaded version 0.1 of model.h5
 </pre>
 
+When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the artifact again.
+
+<pre>
+$$ dvc update model.h5.dvc
+Stage 'model.h5.dvc' didn't change.
+Output 'model.h5' didn't change. Skipping saving.
+[...]
+</pre>
+
+However, when updating the import for another version, DVC detects that another binary must be fetched.
+
+<pre>
+$$ git checkout v0.0.2
+$$ dvc update model.h5.dvc
+WARNING: Output 'model.h5' of 'model.h5.dvc' changed because it is 'not in cache'
+WARNING: Stage 'model.h5.dvc' changed.
+Reproducing 'model.h5.dvc'
+Importing 'model/model.h5 (https://github.com/bbesser/dvc-deps-management-companion.git)' -> 'model.h5'
+Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/dvc-cache'
+[...]
+</pre>
+ 
 TODO: switch between 0.0.2 and 0.0.1 and updating model.h5 accordingly
 
 # Notes
