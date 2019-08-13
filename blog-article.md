@@ -256,8 +256,6 @@ Importing 'model/model.h5 (https://github.com/bbesser/dvc-deps-management-compan
 Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/dvc-cache'
 [...]
 </pre>
- 
-TODO: switch between 0.0.2 and 0.0.1 and updating model.h5 accordingly
 
 # Notes
 
