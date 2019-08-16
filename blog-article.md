@@ -9,7 +9,7 @@ We discuss two _brand-new_<sup>[1](footnote1)</sup> DVC features, namely `dvc ge
 - Think of `dvc import` as `dvc get` plus managing version information for the downloaded artifact.
 I.e., using `dvc import` you can manage artifacts from another DVC project like you would manage a software library dependency in a software engineering project.
 
-![pipeline](images/logo-owl-readme.png)
+![pipeline](https://blog.codecentric.de/files/2019/08/logo-owl-readme.png)
 
 You might want to browse through the walkthrough first, such that you can get the most out of this post.
 For those of you in a hurry, we provide a quick [recap of the original walkthrough](#recap).
@@ -29,7 +29,7 @@ In particular, for each version of the pipeline, the cache contains different ve
 However, cache data is _not_ stored in the Git repository itself, but in a separate so-called remote (e.g. an Amazon S3 bucket).
 When checking out a specific version of the pipeline from the Git repository, DVC takes care of fetching cache data that matches the current pipeline version from the remote.
 
-![dvc remote](https://blog.codecentric.de/files/2019/03/dvc_remote.jpg)
+![dvc remote](https://blog.codecentric.de/files/2019/08/dvc_remote.jpg)
 
 ## <a name="createplayground"></a>Creating the Playground
 
@@ -153,7 +153,7 @@ outs:
 
 From there, DVC deducts that `model.h5` is a file with md5 sum `1042d7fd78dd740019699eaaefd1822f` in the given remote S3 bucket.
 
-![dvc get](images/download_from_cache.png)
+![dvc get](https://blog.codecentric.de/files/2019/08/download_from_cache.png)
 
 ### dvc import
 
