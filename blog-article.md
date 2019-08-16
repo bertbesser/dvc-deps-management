@@ -58,7 +58,7 @@ $$ /home/dvc/scripts/walkthrough.sh # creates the playground DVC project and its
 </pre>
 
 ### <a name="s3remote"></a>Configuring the S3 Remote
-In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC-cache's remote.
+In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC cache's remote.
 
 In order to enable DVC to access a bucket, two preparations have to be done.
 1. First, the `boto3` library must be installed, using `pip install boto3`. (This is already done in the working environment provided with this article.)
@@ -137,7 +137,7 @@ In our example, DVC inspects the following files in the tag 0.3 of `$GIT_REPO`:
 <pre>
 # file .dvc/cache
 ['remote "playground_remote"']
-url = s3://dvc-deps-management.bertatcodecentric.de/dvc-cache
+url = s3://dvc-deps-management.bertatcodecentric.de/dvc-deps-management-playground
 [core]
 remote = playground_remote
 
@@ -252,7 +252,7 @@ WARNING: Output 'model.h5' of 'model.h5.dvc' changed because it is 'not in cache
 WARNING: Stage 'model.h5.dvc' changed.
 Reproducing 'model.h5.dvc'
 Importing 'model/model.h5 (https://github.com/bbesser/dvc-deps-management-playground.git)' -> 'model.h5'
-Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/dvc-cache'
+Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/dvc-deps-management-playground'
 [...]
 </pre>
 
