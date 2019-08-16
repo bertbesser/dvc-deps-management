@@ -26,8 +26,8 @@ The gist is that DVC _versions_ training data, (hyper-)parameters, code and trai
 In particular, a DVC project resides in a Git repository, which implements all necessary versioning (see the following figure).
 Binary data, such as e.g. training data and trained models, are located in DVC's so-called cache.
 In particular, for each version of the pipeline, the cache contains different versions of all binary data.
-However, cache data is _not_ stored in the Git repository itself, but in a separate so-called remote.
-When checking out a specific version of the pipeline from the Git repository, DVC takes care of fetching cache data from the remote that matches the current pipeline version.
+However, cache data is _not_ stored in the Git repository itself, but in a separate so-called remote (e.g. an Amazon S3 bucket).
+When checking out a specific version of the pipeline from the Git repository, DVC takes care of fetching cache data that matches the current pipeline version from the remote.
 
 ![dvc remote](https://blog.codecentric.de/files/2019/03/dvc_remote.jpg)
 
@@ -44,7 +44,7 @@ You will be 'logged in' to a newly created container.
 From the prompt in the container, configure variables at the top of the file `/home/dvc/scripts/walkthrough.sh` to match your GitHub repository and S3 bucket, where both must be empty and writable.
 (Details of the bucket configuration are discussed in section [Configuring the S3 remote](#s3remote).)
 Then, to automatically perform all steps from the extended walkthrough, you might want to execute `/home/dvc/scripts/walkthrough.sh`.
-After the script is finished, the GitHub repository and the S3 bucket will now contain the playground DVC project and its cache, respectively.
+After the script is finished, the GitHub repository and the S3 bucket will now contain the playground DVC project and its cache data, respectively.
 
 <pre>
 # $ is the host prompt
@@ -78,7 +78,7 @@ The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
 <pre>
-$$ dvc remote add -d name_of_the_remote s3://YOUR_BUCKET_NAME
+$$ dvc remote add -d playground_remote s3://YOUR_BUCKET_NAME
 $$ git add .dvc/config # save the configuration of the newly added remote
 </pre>
 
@@ -100,7 +100,7 @@ If you did not create your own playground project, when setting up the environme
 All commands discussed from here on are also available in `/home/dvc/scripts/deps_management.sh` in the working environment.
 
 To enable DVC to access the playground project, recall that DVC needs to know its GitHub repository's URL.
-Also, cache data is located in an S3 bucket and read access to that bucket must be provided.
+Also, cache data is located in an S3 bucket remote and read access to that bucket must be provided.
 Configure your environment as follows:
 <pre>
 $$ export GIT_REPO=<your_playground_repo_url>
@@ -109,8 +109,7 @@ $$ export AWS_SECRET_ACCESS_KEY=<your_playground_secret>
 </pre>
 If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-companion).
 Its URL and credentials are readily configured in `/home/dvc/scripts/deps_management.sh`.
-(Note that the given AWS credentials provide no permissions except read access to the S3 bucket that serves a the DVC cache's remote.)
-
+(Note that the given AWS credentials provide no permissions except read access to the S3 bucket.)
 
 ### dvc get
 
@@ -131,15 +130,15 @@ Consequently, there is no way for DVC to tell which version of `model.h5` is in 
 Hence, issuing the same `dvc get` command again, `model.h5` will be downloaded _again_.
 
 Recall that the file `model.h5` is not part of the Git repository of the DVC project.
-To download the file, DVC transparently resolves the remote of the cache of your project, see the following figure.
+To download the file, DVC transparently resolves the cache remote of your project, see the following figure.
 In our example, DVC inspects the following files in the tag 0.3 of `$GIT_REPO`:
 
 <pre>
 # file .dvc/cache
-['remote "the_remote"']
+['remote "playground_remote"']
 url = s3://dvc-deps-management.bertatcodecentric.de/dvc-cache
 [core]
-remote = the_remote
+remote = playground_remote
 
 # file train.dvc
 # [...]
@@ -283,4 +282,4 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 - use _import stage_ where appropriate
 - rename companion project to playground
 - clarify usage of terms output and artifact
-- clarify usage of terms import and dependeny
+- clarify usage of terms import and dependeny`
