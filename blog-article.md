@@ -66,8 +66,8 @@ In order to enable DVC to access a bucket, two preparations have to be done.
 Therefore, AWS credentials can be provided as environment variables like in the following code block.
 (For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough.sh` script.)
 <pre>
-$$ export AWS_ACCESS_KEY_ID=...
-$$ export AWS_SECRET_ACCESS_KEY=...
+$$ export AWS_ACCESS_KEY_ID=&lt;YOUR_PLAYGROUND_KEY&gt;
+$$ export AWS_SECRET_ACCESS_KEY=&lt;YOUR_PLAYGROUND_SECRET&gt;
 $$ # from here on, DVC can interact with your bucket 
 </pre>
 Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
@@ -78,7 +78,7 @@ The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
 <pre>
-$$ dvc remote add -d playground_remote s3://YOUR_BUCKET_NAME
+$$ dvc remote add -d playground_remote s3://&lt;YOUR_BUCKET_NAME&gt;
 $$ git add .dvc/config # save the configuration of the newly added remote
 </pre>
 
@@ -104,9 +104,9 @@ To enable DVC to access the playground project, recall that DVC needs to know it
 Also, cache data is located in an S3 bucket remote and read access to that bucket must be provided.
 Configure your environment as follows:
 <pre>
-$$ export GIT_REPO=<your_playground_repo_url>
-$$ export AWS_ACCESS_KEY_ID=<your_playground_key>
-$$ export AWS_SECRET_ACCESS_KEY=<your_playground_secret>
+$$ export GIT_REPO=&lt;YOUR_PLAYGROUND_REPO_URL&gt;
+$$ export AWS_ACCESS_KEY_ID=&lt;YOUR_PLAYGROUND_KEY&gt;
+$$ export AWS_SECRET_ACCESS_KEY=&lt;YOUR_PLAYGROUND_SECRET&gt;
 </pre>
 If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-playground).
 Its URL and credentials are readily configured in `/home/dvc/scripts/deps_management.sh`.
