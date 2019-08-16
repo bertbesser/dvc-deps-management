@@ -83,7 +83,8 @@ $$ git add .dvc/config # save the configuration of the newly added remote
 </pre>
 
 ## Using a DVC Project as a Dependency
-We discuss how to access a DVC project's _outputs_.
+We discuss how to access an artifact of a DVC project.
+To be more precise, we want to access an _output_ of the DVC project's pipeline.
 An output is some (possibly binary) file created by the pipeline defined in the project.
 To be precise, an output file is created by some stage of the pipeline, e.g. the training stage creates a trained model as output.
 Recall that the pipeline and its output files are versioned.
@@ -156,11 +157,11 @@ From there, DVC deducts that `model.h5` is a file with md5 sum `1042d7fd78dd7400
 
 ### dvc import
 
-`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC artifacts.
+`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC outputs.
 The project that receives an import must itself be a DVC project (although it does not have to be an ML project).
 This way, DVC is able to track the desired version of the imported data as the software project evolves over time.
 
-Here is an example of creating a new project that imports another DVC project's artifact, namely `model.h5`.
+Here is an example of creating a new project that imports another DVC project's output, namely `model.h5`.
 <pre>
 $$ git init
 $$ dvc init
@@ -168,12 +169,12 @@ $$ git add .
 $$ git commit -m 'initialize repository'
 $$ dvc import --rev 0.1 $GIT_REPO model/model.h5
 
-$$ # besides downloading the artifact,
+$$ # besides downloading the output,
 $$ # dvc also stores some versioning information ...
 $$ ls
 model.h5  model.h5.dvc
 
-$$ # ... which contains the 'source' of the artifact
+$$ # ... which contains the 'source' of the output
 $$ cat model.h5.dvc
 [...]
 deps:
@@ -233,7 +234,7 @@ $$ ls
 model.h5  model.h5.dvc # dvc update downloaded version 0.1 of model.h5
 </pre>
 
-When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the artifact again.
+When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the output again.
 
 <pre>
 $$ dvc update model.h5.dvc
@@ -280,5 +281,5 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 - / clarify usages of terms `cache` and `remote`
 - / use _import stage_ where appropriate
 - rename companion project to playground
-- clarify usage of terms output and artifact
+- / clarify usage of terms output and artifact
 - clarify usage of terms import and dependeny`
