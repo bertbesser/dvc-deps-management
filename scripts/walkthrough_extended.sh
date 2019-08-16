@@ -31,7 +31,7 @@ git tag -a 0.0 -m "freshly initialized with no pipeline defined, yet"
 git status
 
 # setup dvc remote for pushing the cache to
-dvc remote add -d the_remote $REMOTE
+dvc remote add -d playground_remote $REMOTE
 git add .dvc/config # save remote configuration, such that cached data can be pulled from it when your team colleagues checkout the git repo
 git commit -m "configure remote"
 dvc push -v -T # this is where dvc pushes cached data to the remote (for all tags)
