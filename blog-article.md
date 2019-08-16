@@ -13,7 +13,7 @@ I.e., using `dvc import` you can manage artifacts from another DVC project like 
 
 You might want to browse through the walkthrough first, such that you can get the most out of this post.
 For those of you in a hurry, we provide a quick [recap of the original walkthrough](#recap).
-In the first part of this article we create a playground project which we use as a DVC-dependency hands-on in the second part.
+In the first part of this article we create a playground project which we use as a DVC dependency hands-on in the second part.
 If you're in a hurry, still, note that part one can be skipped.
 A publicly accessible playground project is provided, such that you can step right into the hands-on fun in part two.
 
@@ -36,7 +36,7 @@ When checking out a specific version of the pipeline from the Git repository, DV
 As for the original walkthrough, [the GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now provides a readily usable working environment.
 In this environment, you can interactively create the playground number classifier project (or let a script perform all actions for you).
 Compared to the original walkthrough, the following extensions were implemented.
-First, the playground project is pushed to GitHub such that it can easily be referenced as a DVC-dependency.
+First, the playground project is pushed to GitHub such that it can easily be referenced as a DVC dependency.
 Secondly, the playground's DVC cache is now pushed to a remote in an Amazon S3 bucket, such that binary data (e.g. trained models) can also be accessed from the internet.
 
 To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management), change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
@@ -158,9 +158,9 @@ From there, DVC deducts that `model.h5` is a file with md5 sum `1042d7fd78dd7400
 
 `dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC artifacts.
 The project that receives an import must itself be a DVC project (although it does not have to be an ML project).
-This way, DVC is able to track the desired version of a dependency as the software project evolves over time.
+This way, DVC is able to track the desired version of the imported data as the software project evolves over time.
 
-Here is an example of creating a new project with a dependency to a DVC artifact, namely `model.h5`.
+Here is an example of creating a new project that imports another DVC project's artifact, namely `model.h5`.
 <pre>
 $$ git init
 $$ dvc init
@@ -186,7 +186,7 @@ deps:
 </pre>
 
 Observe that, following the DVC approach, the imported binary file `model.h5` will not be committed to the Git repository.
-Instead, the dependency is managed by committing the DVC file `model.h5.dvc` to our project.
+Instead, the import is managed by committing the DVC file `model.h5.dvc` to our project.
 Following the naming convention that `.dvc` files represent _stages_ of a pipeline, a `.dvc` file for an import is called an _import stage_.
 
 <pre>
@@ -196,11 +196,11 @@ $$ git status # model.h5 is not listed as untracked ...
 $$ cat .gitignore # ... since it's ignored
 /model.h5
 $$ git add model.h5.dvc .gitignore
-$$ git commit -m 'add model.h5 (version 0.1) as dependency'
+$$ git commit -m 'import model.h5 (version 0.1)'
 $$ git tag v0.0.1
 </pre>
 
-As time goes by and your project evolves, a new version of the dependency becomes available.
+As time goes by and your project evolves, a new version of the import becomes available.
 Updating to the new version is easy:
 
 <pre>
@@ -224,8 +224,7 @@ $$ ls
 model.h5.dvc # the model is not part of the git repository
 </pre>
 
-But without the correct dependency in place, `dvc repro` might fail.
-How does she obtain `model.h5`?
+How does she obtain `model.h5` without reproducing the entire pipeline?
 Meet `dvc update`, which takes care of updating an import stage to the version given in its `.dvc` file.
 
 <pre>
@@ -258,7 +257,7 @@ Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/d
 
 # Wrap-up
 We introduced you to the DVC commands `get`, `import`, and `update` which allow you manage artifacts from a DVC project as dependencies.
-While `get` simply downloads an artifact, `import` and `update` enable you to track the version of the dependency in your software project.
+While `get` simply downloads an artifact, `import` and `update` enable you to track the version of the artifact in your software project.
 
 In an upcoming post, we demo these features in a real world application.
 We're happy to meet you there :-D
@@ -278,8 +277,8 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 </pre>
 
 # TODO
-- clarify usages of terms `cache` and `remote`
-- use _import stage_ where appropriate
+- / clarify usages of terms `cache` and `remote`
+- / use _import stage_ where appropriate
 - rename companion project to playground
 - clarify usage of terms output and artifact
 - clarify usage of terms import and dependeny`
