@@ -4,10 +4,10 @@
 # the GIT_REPO and REMOTE S3 must exist, have write permissions enabled, and must be empty
 export MAIL="bert.besser@codecentric.de"
 export USER="bbesser"
-export GIT_REPO=https://github.com/$USER/dvc-deps-management-companion.git
+export GIT_REPO=https://github.com/$USER/dvc-deps-management-playground.git
 export AWS_ACCESS_KEY_ID=*****
 export AWS_SECRET_ACCESS_KEY=*****
-export REMOTE=s3://dvc-deps-management.bertatcodecentric.de/dvc-cache
+export REMOTE=s3://dvc-deps-management.bertatcodecentric.de/dvc-deps-management-playground
 
 git status # this is not a git repo yet
 

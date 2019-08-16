@@ -6,7 +6,7 @@
 # provided for your convenience. Both were created by the extended walkthrough.
 # Note that the given AWS credentials provide read only access to the DVC
 # cache remote (and no futher permissions).
-export GIT_REPO=https://github.com/bbesser/dvc-deps-management-companion.git
+export GIT_REPO=https://github.com/bbesser/dvc-deps-management-playground.git
 export AWS_ACCESS_KEY_ID=AKIAUTWTWR37V2Q623BI
 export AWS_SECRET_ACCESS_KEY=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
 
