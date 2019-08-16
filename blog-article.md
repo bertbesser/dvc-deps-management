@@ -108,7 +108,7 @@ $$ export GIT_REPO=<your_playground_repo_url>
 $$ export AWS_ACCESS_KEY_ID=<your_playground_key>
 $$ export AWS_SECRET_ACCESS_KEY=<your_playground_secret>
 </pre>
-If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-companion).
+If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-playground).
 Its URL and credentials are readily configured in `/home/dvc/scripts/deps_management.sh`.
 (Note that the given AWS credentials provide no permissions except read access to the S3 bucket.)
 
@@ -119,7 +119,7 @@ In the following example, we download version 0.3 of the trained model from the 
 
 <pre>
 $$ # replace with your playground GitHub repo (if any)
-$$ GIT_REPO=https://github.com/bbesser/dvc-deps-management-companion.git
+$$ GIT_REPO=https://github.com/bbesser/dvc-deps-management-playground.git
 
 $$ dvc get --rev 0.1 $GIT_REPO model/model.h5
 $$ ls
@@ -179,7 +179,7 @@ $$ cat model.h5.dvc
 [...]
 deps:
 - repo:
-    url: https://github.com/bbesser/dvc-deps-management-companion.git
+    url: https://github.com/bbesser/dvc-deps-management-playground.git
     [...]
     rev: '0.1'
   path: model/model.h5
@@ -251,7 +251,7 @@ $$ dvc update model.h5.dvc
 WARNING: Output 'model.h5' of 'model.h5.dvc' changed because it is 'not in cache'
 WARNING: Stage 'model.h5.dvc' changed.
 Reproducing 'model.h5.dvc'
-Importing 'model/model.h5 (https://github.com/bbesser/dvc-deps-management-companion.git)' -> 'model.h5'
+Importing 'model/model.h5 (https://github.com/bbesser/dvc-deps-management-playground.git)' -> 'model.h5'
 Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/dvc-cache'
 [...]
 </pre>
@@ -280,6 +280,7 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 # TODO
 - / clarify usages of terms `cache` and `remote`
 - / use _import stage_ where appropriate
-- rename companion project to playground
+- / rename companion project to playground
+- rename cache remote to playground
 - / clarify usage of terms output and artifact
 - / clarify usage of terms import and dependeny`
