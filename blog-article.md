@@ -267,7 +267,7 @@ We're happy to meet you there :-D
 
 # Notes
 
-<sup>1</sup><a name="footnote1"></a> If `dvc get` and `dvc import` are not available in your DVC version, you can try a recent development version of DVC like so:
+<sup>1</sup><a name="footnote1"></a> If `dvc get` and `dvc import` are not available in your DVC version, you can try a recent version of DVC like so:
 <pre>
 # create sandbox for recent DVC version
 pip install virtualenv # if not already installed
