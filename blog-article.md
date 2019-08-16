@@ -256,6 +256,8 @@ Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/d
 [...]
 </pre>
 
+After the command has executed, the correct version of `model.h5` was downloaded and is available in your filesystem.
+
 # Wrap-up
 We introduced you to the DVC commands `get`, `import`, and `update` which allow you manage artifacts from a DVC project as dependencies.
 While `get` simply downloads an artifact, `import` and `update` enable you to track the version of the artifact in your software project.
