@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# disable Anonymized Usage Analytics, for those who prefer this
+dvc config --global core.analytics false
+
 # replace with your settings
 # the GIT_REPO and REMOTE S3 must exist, have write permissions enabled, and must be empty
 export MAIL="bert.besser@codecentric.de"

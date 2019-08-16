@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# disable Anonymized Usage Analytics, for those who prefer this
+dvc config --global core.analytics false
+
 # Replace with your GitHub repository and S3 bucket (created when you executed the walkthrough).
 #
 # The given (initial) configuration points to the GitHub repository and S3 bucket
