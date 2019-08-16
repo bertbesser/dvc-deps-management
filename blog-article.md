@@ -282,4 +282,4 @@ pip install git+git://github.com/iterative/dvc@0.52.1
 - / use _import stage_ where appropriate
 - rename companion project to playground
 - / clarify usage of terms output and artifact
-- clarify usage of terms import and dependeny`
+- / clarify usage of terms import and dependeny`
