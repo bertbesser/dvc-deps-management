@@ -274,5 +274,5 @@ virtualenv sandbox
 
 # open sandbox and install recent DVC version into it
 source sandbox/bin/activate
-pip install git+git://github.com/iterative/dvc@0.52.1
+pip install git+git://github.com/iterative/dvc@0.55.0
 </pre>
