@@ -6,6 +6,8 @@ REPO_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MOUNT_FOLDER=$REPO_FOLDER/mount_folder
 mkdir -p $MOUNT_FOLDER
 
+docker stop $CONTAINER_IMAGE_NAME
+docker rm $CONTAINER_IMAGE_NAME
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t $CONTAINER_IMAGE_NAME .
 docker run -d --mount type=bind,source=$MOUNT_FOLDER,target=/remote --name $CONTAINER_IMAGE_NAME $CONTAINER_IMAGE_NAME
 

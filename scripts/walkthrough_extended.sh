@@ -18,6 +18,8 @@ git init # let's make it a git repo
 git config user.email "$MAIL"
 git config user.name "$USER"
 git add code # prepare initial import
+echo "This repository contains the DVC playground project created in the the tutorial at [https://github.com/bbesser/dvc-deps-management](https://github.com/bbesser/dvc-deps-management)" > README.md
+git add README.md
 git commit -m "init repo"
 git status
 
