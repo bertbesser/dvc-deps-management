@@ -46,7 +46,7 @@ From the prompt in the container, configure variables at the top of the file `/h
 Then, to automatically perform all steps from the extended walkthrough, you might want to execute `/home/dvc/scripts/walkthrough.sh`.
 After the script is finished, the GitHub repository and the S3 bucket will now contain the playground DVC project and its cache data, respectively.
 
-<pre>
+```bash
 # $ is the host prompt
 # $$ is the working environment container prompt
 
@@ -55,7 +55,7 @@ $ cd dvc-deps-management
 $ vi scripts/walkthrough.sh # configure GitHub and S3 at the top
 $ ./start_environment.sh bash # create and 'log in' to working environment
 $$ /home/dvc/scripts/walkthrough.sh # creates the playground DVC project and its cache
-</pre>
+```
 
 ### <a name="s3remote"></a>Configuring the S3 Remote
 In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC cache's remote.
@@ -65,11 +65,12 @@ In order to enable DVC to access a bucket, two preparations have to be done.
 1. Secondly, `boto3` must be given access to the bucket.
 Therefore, AWS credentials can be provided as environment variables like in the following code block.
 (For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough.sh` script.)
-<pre>
-$$ export AWS_ACCESS_KEY_ID=&lt;YOUR_PLAYGROUND_KEY&gt;
-$$ export AWS_SECRET_ACCESS_KEY=&lt;YOUR_PLAYGROUND_SECRET&gt;
+
+```bash
+$$ export AWS_ACCESS_KEY_ID=<YOUR_PLAYGROUND_KEY>
+$$ export AWS_SECRET_ACCESS_KEY=<YOUR_PLAYGROUND_SECRET>
 $$ # from here on, DVC can interact with your bucket 
-</pre>
+```
 Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
 
 Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough.sh`).
@@ -77,10 +78,10 @@ Since the given URI start with `s3://`, DVC knows that the remote should reside 
 The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
-<pre>
-$$ dvc remote add -d playground_remote s3://&lt;YOUR_BUCKET_NAME&gt;
+```bash
+$$ dvc remote add -d playground_remote s3://<YOUR_BUCKET_NAME>
 $$ git add .dvc/config # save the configuration of the newly added remote
-</pre>
+```
 
 ## Using a DVC Project as a Dependency
 We discuss how to access an artifact of a DVC project.
@@ -103,11 +104,12 @@ All commands discussed from here on are also available in `/home/dvc/scripts/dep
 To enable DVC to access the playground project, recall that DVC needs to know its GitHub repository's URL.
 Also, cache data is located in an S3 bucket remote and read access to that bucket must be provided.
 Configure your environment as follows:
-<pre>
-$$ export GIT_REPO=&lt;YOUR_PLAYGROUND_REPO_URL&gt;
-$$ export AWS_ACCESS_KEY_ID=&lt;YOUR_PLAYGROUND_KEY&gt;
-$$ export AWS_SECRET_ACCESS_KEY=&lt;YOUR_PLAYGROUND_SECRET&gt;
-</pre>
+
+```bash
+$$ export GIT_REPO=<YOUR_PLAYGROUND_REPO_URL>
+$$ export AWS_ACCESS_KEY_ID=<YOUR_PLAYGROUND_KEY>
+$$ export AWS_SECRET_ACCESS_KEY=<YOUR_PLAYGROUND_SECRET>
+```
 If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-playground).
 Its URL and credentials are readily configured in `/home/dvc/scripts/deps_management.sh`.
 (Note that the given AWS credentials provide no permissions except read access to the S3 bucket.)
@@ -117,14 +119,14 @@ Its URL and credentials are readily configured in `/home/dvc/scripts/deps_manage
 When getting an output from a DVC project, DVC takes care of 'downloading' the desired version from the file.
 In the following example, we download version 0.3 of the trained model from the playground project.
 
-<pre>
+```bash
 $$ # replace with your playground GitHub repo (if any)
 $$ GIT_REPO=https://github.com/bbesser/dvc-deps-management-playground.git
 
 $$ dvc get --rev 0.1 $GIT_REPO model/model.h5
 $$ ls
 model.h5 # no other file was downloaded
-</pre>
+```
 
 In particular, observe that no file was downloaded besides `model.h5`.
 Consequently, there is no way for DVC to tell which version of `model.h5` is in your file system.
@@ -134,7 +136,7 @@ Recall that the file `model.h5` is not part of the Git repository of the DVC pro
 To download the file, DVC transparently resolves the cache remote of your project, see the following figure.
 In our example, DVC inspects the following files in the tag 0.3 of `$GIT_REPO`:
 
-<pre>
+```bash
 # file .dvc/cache
 ['remote "playground_remote"']
 url = s3://dvc-deps-management.bertatcodecentric.de/dvc-deps-management-playground
@@ -149,7 +151,7 @@ outs:
   cache: true
   metric: false
   persist: false
-</pre> 
+``` 
 
 From there, DVC deducts that `model.h5` is a file with md5 sum `1042d7fd78dd740019699eaaefd1822f` in the given remote S3 bucket.
 
@@ -162,7 +164,8 @@ The project that receives an import must itself be a DVC project (although it do
 This way, DVC is able to track the desired version of the imported data as the software project evolves over time.
 
 Here is an example of creating a new project that imports another DVC project's output, namely `model.h5`.
-<pre>
+
+```bash
 $$ git init
 $$ dvc init
 $$ git add .
@@ -184,13 +187,13 @@ deps:
     rev: '0.1'
   path: model/model.h5
 [...]
-</pre>
+```
 
 Observe that, following the DVC approach, the imported binary file `model.h5` will not be committed to the Git repository.
 Instead, the import is managed by committing the DVC file `model.h5.dvc` to our project.
 Following the naming convention that `.dvc` files represent _stages_ of a pipeline, a `.dvc` file for an import is called an _import stage_.
 
-<pre>
+```bash
 $$ git status # model.h5 is not listed as untracked ...
     .gitignore
     model.h5.dvc
@@ -199,12 +202,12 @@ $$ cat .gitignore # ... since it's ignored
 $$ git add model.h5.dvc .gitignore
 $$ git commit -m 'import model.h5 (version 0.1)'
 $$ git tag v0.0.1
-</pre>
+```
 
 As time goes by and your project evolves, a new version of the import becomes available.
 Updating to the new version is easy:
 
-<pre>
+```bash
 $$ dvc import --rev 0.2 $GIT_REPO model/model.h5 # bump revision to 0.2
 $$ # the file model.h5 now contains the newer version of the model
 $$ git status
@@ -212,40 +215,40 @@ $$ git status
 $$ git add model.h5.dvc
 $$ git commit -m 'update model.h5 to version 0.2'
 $$ git tag v0.0.2 # version 0.0.2 of our project uses version 0.2 of model.h5
-</pre>
+```
 
 #### Cloning a Project with DVC Dependencies
 
 In the project created in the previous section, the Git repository does not contain the binary file `model.h5`.
 So, if one of your team members clones this project, she will not receive `model.h5`.
 
-<pre>
+```bash
 $$ # checkout tag v0.0.1 of the software project
 $$ ls
 model.h5.dvc # the model is not part of the git repository
-</pre>
+```
 
 How does she obtain `model.h5` without reproducing the entire pipeline?
 Meet `dvc update`, which takes care of updating an import stage to the version given in its `.dvc` file.
 
-<pre>
+```bash
 $$ dvc update model.h5.dvc
 $$ ls
 model.h5  model.h5.dvc # dvc update downloaded version 0.1 of model.h5
-</pre>
+```
 
 When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the output again.
 
-<pre>
+```bash
 $$ dvc update model.h5.dvc
 Stage 'model.h5.dvc' didn't change.
 Output 'model.h5' didn't change. Skipping saving.
 [...]
-</pre>
+```
 
 However, when updating the import for another version, DVC detects that another binary must be fetched.
 
-<pre>
+```bash
 $$ git checkout v0.0.2
 $$ dvc update model.h5.dvc
 WARNING: Output 'model.h5' of 'model.h5.dvc' changed because it is 'not in cache'
@@ -254,7 +257,7 @@ Reproducing 'model.h5.dvc'
 Importing 'model/model.h5 (https://github.com/bbesser/dvc-deps-management-playground.git)' -> 'model.h5'
 Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/dvc-deps-management-playground'
 [...]
-</pre>
+```
 
 After the command has executed, the correct version of `model.h5` was downloaded and is available in your filesystem.
 
@@ -268,13 +271,14 @@ We're happy to meet you there :-D
 # Notes
 
 <sup>1</sup><a name="footnote1"></a> If `dvc get` and `dvc import` are not available in your DVC version, you can try a recent version of DVC like so:
-<pre>
-# create sandbox for recent DVC version
-pip install virtualenv # if not already installed
-cd /tmp
-virtualenv sandbox
 
-# open sandbox and install recent DVC version into it
-source sandbox/bin/activate
-pip install git+git://github.com/iterative/dvc@0.55.0
-</pre>
+```bash
+$ # create sandbox for recent DVC version
+$ pip install virtualenv # if not already installed
+$ cd /tmp
+$ virtualenv sandbox
+
+$ # open sandbox and install recent DVC version into it
+$ source sandbox/bin/activate
+$ pip install git+git://github.com/iterative/dvc@0.55.0
+```
