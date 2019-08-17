@@ -1,5 +1,3 @@
-# DVC Dependency Management
-
 This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
 In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model) from one DVC project into another.
 
@@ -19,7 +17,7 @@ A publicly accessible playground project is provided, such that you can step rig
 
 A real world application of `dvc get` and `dvc import` will be discussed in an upcoming post. So stay tuned for more :-D
 
-## <a name="recap"></a>Recap of the Original Walkthrough
+## <a name="recap"></a>Recap of the original walkthrough
 In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a classifier for hand-written numbers.
 The walkthrough showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
 The gist is that DVC _versions_ training data, (hyper-)parameters, code and trained models _together_.
@@ -31,7 +29,7 @@ When checking out a specific version of the pipeline from the Git repository, DV
 
 ![dvc remote](https://blog.codecentric.de/files/2019/08/dvc_remote.jpg)
 
-## <a name="createplayground"></a>Creating the Playground
+## <a name="createplayground"></a>Creating the playground
 
 As for the original walkthrough, [the GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now provides a readily usable working environment.
 In this environment, you can interactively create the playground number classifier project (or let a script perform all actions for you).
@@ -57,7 +55,7 @@ $ ./start_environment.sh bash # create and 'log in' to working environment
 $$ /home/dvc/scripts/walkthrough.sh # creates the playground DVC project and its cache
 ```
 
-### <a name="s3remote"></a>Configuring the S3 Remote
+### <a name="s3remote"></a>Configuring the S3 remote
 In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC cache's remote.
 
 In order to enable DVC to access a bucket, two preparations have to be done.
@@ -83,7 +81,7 @@ $$ dvc remote add -d playground_remote s3://<YOUR_BUCKET_NAME>
 $$ git add .dvc/config # save the configuration of the newly added remote
 ```
 
-## Using a DVC Project as a Dependency
+## Using a DVC project as a dependency
 We discuss how to access an artifact of a DVC project.
 To be more precise, we want to access an _output_ of the DVC project's pipeline.
 An output is some (possibly binary) file created by the pipeline defined in the project.
@@ -217,7 +215,7 @@ $$ git commit -m 'update model.h5 to version 0.2'
 $$ git tag v0.0.2 # version 0.0.2 of our project uses version 0.2 of model.h5
 ```
 
-#### Cloning a Project with DVC Dependencies
+#### Cloning a project with DVC dependencies
 
 In the project created in the previous section, the Git repository does not contain the binary file `model.h5`.
 So, if one of your team members clones this project, she will not receive `model.h5`.
