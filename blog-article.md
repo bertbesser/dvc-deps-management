@@ -1,11 +1,12 @@
 This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
-In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model) from one DVC project into another.
+In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model or a dataset) from one DVC project into another.
 
 We discuss two _brand-new_<sup>[1](#footnote1)</sup> DVC features, namely `dvc get` and `dvc import`.
 - Intuitively, `dvc get` downloads an artifact from a DVC project (where DVC takes care of resolving the project's DVC cache and its remotes).
  E.g., `dvc get` is a very helpful tool in delivering your model to production in a CI/CD pipeline.
 - Think of `dvc import` as `dvc get` plus managing version information for the downloaded artifact.
 I.e., using `dvc import` you can manage artifacts from another DVC project like you would manage a software library dependency in a software engineering project.
+For example, `dvc import` helps you when organizing dataset registries.
 
 ![pipeline](https://blog.codecentric.de/files/2019/08/logo-new-readme.png)
 
