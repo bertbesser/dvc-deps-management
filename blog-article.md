@@ -83,16 +83,15 @@ $$ git add .dvc/config # save the configuration of the newly added remote
 ```
 
 ## Using a DVC project as a dependency
-We discuss how to access an artifact of a DVC project.
-To be more precise, we want to access an _output_ of the DVC project's pipeline.
-An output is some (possibly binary) file created by the pipeline defined in the project.
-To be precise, an output file is created by some stage of the pipeline, e.g. the training stage creates a trained model as output.
-Recall that the pipeline and its output files are versioned.
-Consequently, any version of any output file can be accessed.
+We discuss how to access data from a DVC project.
+To be more precise, we want to access some (possibly binary) file processed and/or created by the pipeline defined in the project.
+E.g., we want to access some "source" data like a set of training images, or the model created by the training stage.
+Recall that the pipeline and all data is versioned.
+Consequently, any version of any data can be accessed.
 
-We present two ways to access an output, namely `dvc get` and `dvc import`.
-Intuitively, `dvc get` simply downloads an output file.
-`dvc import` downloads an output file and additionally considers what version was fetched.
+We present two ways to access data, namely `dvc get` and `dvc import`.
+Intuitively, `dvc get` simply downloads data.
+`dvc import` downloads data and additionally considers what version was fetched.
 
 ### Setup
 The working environment given in section [Creating the playground](#createplayground) should also be used to follow along interactively with the commands presented in this section.
@@ -115,7 +114,7 @@ Its URL and credentials are readily configured in `/home/dvc/scripts/deps_manage
 
 ### dvc get
 
-When getting an output from a DVC project, DVC takes care of 'downloading' the desired version from the file.
+When getting data from a DVC project, DVC takes care of 'downloading' the desired version from the file.
 In the following example, we download version 0.3 of the trained model from the playground project.
 
 ```bash
@@ -158,11 +157,11 @@ From there, DVC deducts that `model.h5` is a file with md5 sum `1042d7fd78dd7400
 
 ### dvc import
 
-`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to DVC outputs.
+`dvc import` adds version control to `dvc get`, i.e., `dvc import` is meant to manage a software project's dependencies to some DVC project's data.
 The project that receives an import must itself be a DVC project (although it does not have to be an ML project).
 This way, DVC is able to track the desired version of the imported data as the software project evolves over time.
 
-Here is an example of creating a new project that imports another DVC project's output, namely `model.h5`.
+Here is an example of creating a new project that imports data (`model.h5`) from another DVC project.
 
 ```bash
 $$ git init
@@ -171,12 +170,12 @@ $$ git add .
 $$ git commit -m 'initialize repository'
 $$ dvc import --rev 0.1 $GIT_REPO model/model.h5
 
-$$ # besides downloading the output,
+$$ # besides downloading the data,
 $$ # dvc also stores some versioning information ...
 $$ ls
 model.h5  model.h5.dvc
 
-$$ # ... which contains the 'source' of the output
+$$ # ... which contains the 'source' of the data
 $$ cat model.h5.dvc
 [...]
 deps:
@@ -236,7 +235,7 @@ $$ ls
 model.h5  model.h5.dvc # dvc update downloaded version 0.1 of model.h5
 ```
 
-When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the output again.
+When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the data again.
 
 ```bash
 $$ dvc update model.h5.dvc
