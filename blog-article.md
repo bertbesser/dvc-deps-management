@@ -40,9 +40,9 @@ Secondly, the playground's DVC cache is now pushed to a remote in an Amazon S3 b
 
 To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management), change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
 You will be 'logged in' to a newly created container.
-From the prompt in the container, configure variables at the top of the file `/home/dvc/scripts/walkthrough.sh` to match your GitHub repository and S3 bucket, where both must be empty and writable.
+From the prompt in the container, configure variables at the top of the file `/home/dvc/scripts/walkthrough_extended.sh` to match your GitHub repository and S3 bucket, where both must be empty and writable.
 (Details of the bucket configuration are discussed in section [Configuring the S3 remote](#s3remote).)
-Then, to automatically perform all steps from the extended walkthrough, you might want to execute `/home/dvc/scripts/walkthrough.sh`.
+Then, to automatically perform all steps from the extended walkthrough, you might want to execute `/home/dvc/scripts/walkthrough_extended.sh`.
 After the script is finished, the GitHub repository and the S3 bucket will now contain the playground DVC project and its cache data, respectively.
 
 ```bash
@@ -51,19 +51,19 @@ After the script is finished, the GitHub repository and the S3 bucket will now c
 
 $ git clone https://github.com/bbesser/dvc-deps-management
 $ cd dvc-deps-management
-$ vi scripts/walkthrough.sh # configure GitHub and S3 at the top
+$ vi scripts/walkthrough_extended.sh # configure GitHub and S3 at the top
 $ ./start_environment.sh bash # create and 'log in' to working environment
-$$ /home/dvc/scripts/walkthrough.sh # creates the playground DVC project and its cache
+$$ /home/dvc/scripts/walkthrough_extended.sh # creates the playground DVC project and its cache
 ```
 
 ### <a name="s3remote"></a>Configuring the S3 remote
-In this section, we take a quick look at the part of the `scripts/walkthrough.sh` script that sets up an S3 bucket as the DVC cache's remote.
+In this section, we take a quick look at the part of the `scripts/walkthrough_extended.sh` script that sets up an S3 bucket as the DVC cache's remote.
 
 In order to enable DVC to access a bucket, two preparations have to be done.
 1. First, the `boto3` library must be installed, using `pip install boto3`. (This is already done in the working environment provided with this article.)
 1. Secondly, `boto3` must be given access to the bucket.
 Therefore, AWS credentials can be provided as environment variables like in the following code block.
-(For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough.sh` script.)
+(For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough_extended.sh` script.)
 
 ```bash
 $$ export AWS_ACCESS_KEY_ID=<YOUR_PLAYGROUND_KEY>
@@ -72,7 +72,7 @@ $$ # from here on, DVC can interact with your bucket
 ```
 Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
 
-Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough.sh`).
+Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough_extended.sh`).
 Since the given URI start with `s3://`, DVC knows that the remote should reside in a bucket.
 The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
@@ -95,7 +95,7 @@ Intuitively, `dvc get` simply downloads data.
 
 ### Setup
 The working environment given in section [Creating the playground](#createplayground) should also be used to follow along interactively with the commands presented in this section.
-If you did not create your own playground project, when setting up the environment, you can ignore all steps regarding `scripts/walkthrough.sh`.
+If you did not create your own playground project, when setting up the environment, you can ignore all steps regarding `scripts/walkthrough_extended.sh`.
 
 All commands discussed from here on are also available in `/home/dvc/scripts/deps_management.sh` in the working environment.
 
