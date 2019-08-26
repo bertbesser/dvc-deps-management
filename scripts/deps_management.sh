@@ -54,9 +54,11 @@ git clone dvc-import-tutorial dvc-clone-imports-tutorial
 cd dvc-clone-imports-tutorial
 git checkout v0.0.1
 ls # there is only model.h5.dvc
-dvc update model.h5.dvc
+
+# to be replaced with `dvc pull model.h5.dvc`, see https://github.com/iterative/dvc/issues/2423
+dvc unlock model.h5.dvc; dvc repro model.h5.dvc; dvc lock model.h5.dvc
 ls # now model.h5 was downloaded
-dvc update model.h5.dvc # no version change => no new download
-git checkout v0.0.2
-dvc update model.h5.dvc # the new version will be downloaded
+dvc unlock model.h5.dvc; dvc repro model.h5.dvc; dvc lock model.h5.dvc # no version change => no new download
+git checkout -f v0.0.2
+dvc unlock model.h5.dvc; dvc repro model.h5.dvc; dvc lock model.h5.dvc # the new version will be downloaded
 

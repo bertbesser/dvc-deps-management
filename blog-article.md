@@ -225,28 +225,31 @@ model.h5.dvc # the model is not part of the git repository
 ```
 
 How does she obtain `model.h5` without reproducing the entire pipeline?
-Meet `dvc update`, which takes care of updating an import stage to the version given in its `.dvc` file.
+She can reproduce the import stage using `dvc repro`.
+(At the time of writing, the stage file has to be manually unlocked/locked.
+However, [there are plans](https://github.com/iterative/dvc/issues/2423) to implement the use case in `dvc pull`.)
 
 ```bash
-$$ dvc update model.h5.dvc
+$$ dvc unlock model.h5.dvc
+$$ dvc repro model.h5.dvc
+$$ dvc lock model.h5.dvc # fix lock
 $$ ls
-model.h5  model.h5.dvc # dvc update downloaded version 0.1 of model.h5
+model.h5  model.h5.dvc # dvc downloaded version 0.1 of model.h5
 ```
 
-When issuing the same command again, DVC detects that the version of `model.h5` did not change, and therefore does not download the data again.
+When issuing the same commands again, DVC detects that the version of `model.h5` did not change, and therefore does not download the data again.
 
 ```bash
-$$ dvc update model.h5.dvc
-Stage 'model.h5.dvc' didn't change.
-Output 'model.h5' didn't change. Skipping saving.
-[...]
+$$ dvc unlock model.h5.dvc; dvc repro model.h5.dvc; dvc lock model.h5.dvc
+Stage 'model.h5.dvc' didnt change.
+Data and pipelines are up to date.
 ```
 
 However, when updating the import for another version, DVC detects that another binary must be fetched.
 
 ```bash
-$$ git checkout v0.0.2
-$$ dvc update model.h5.dvc
+$$ git checkout -f v0.0.2
+$$ dvc unlock model.h5.dvc; dvc repro model.h5.dvc; dvc lock model.h5.dvc
 WARNING: Output 'model.h5' of 'model.h5.dvc' changed because it is 'not in cache'
 WARNING: Stage 'model.h5.dvc' changed.
 Reproducing 'model.h5.dvc'
