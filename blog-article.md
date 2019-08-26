@@ -1,25 +1,25 @@
-This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
-In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model or a dataset) from one DVC project into another.
+This post is a follow-up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) that deals with managing dependencies between DVC projects.
+In particular, this follow-up is about importing specific versions of an artifact (e.g. a trained model or a dataset) from one DVC project into another.
 
 We discuss two recently added DVC features, namely `dvc get` and `dvc import`.
 - Intuitively, `dvc get` downloads an artifact from a DVC project (where DVC takes care of resolving the project's DVC cache and its remotes).
- E.g., `dvc get` is a very helpful tool in delivering your model to production in a CI/CD pipeline.
+ For example, `dvc get` is a very helpful tool in delivering your model to production in a CI/CD pipeline.
 - Think of `dvc import` as `dvc get` plus managing version information for the downloaded artifact.
-I.e., using `dvc import` you can manage artifacts from another DVC project like you would manage a software library dependency in a software engineering project.
+That is, using `dvc import` you can manage artifacts from another DVC project like you would manage a software library dependency in a software engineering project.
 For example, `dvc import` helps you when organizing dataset registries.
 
 ![pipeline](https://blog.codecentric.de/files/2019/08/logo-new-readme.png)
 
-You might want to browse through the walkthrough first, such that you can get the most out of this post.
+You might want to browse through the walkthrough first, so that you can get the most out of this post.
 For those of you in a hurry, we provide a quick [recap of the original walkthrough](#recap).
 In the first part of this article we create a playground project which we use as a DVC dependency hands-on in the second part.
 If you're in a hurry, still, note that part one can be skipped.
-A publicly accessible playground project is provided, such that you can step right into the hands-on fun in part two.
+A publicly accessible playground project is provided, so that you can step right into the hands-on fun in part two.
 
-A real world application of `dvc get` and `dvc import` will be discussed in an upcoming post. So stay tuned for more :-D
+A real-world application of `dvc get` and `dvc import` will be discussed in an upcoming post. So stay tuned for more :-D
 
 ## <a name="recap"></a>Recap of the original walkthrough
-In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) we trained a classifier for hand-written numbers.
+In [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/), we trained a classifier for hand-written numbers.
 The walkthrough showed how implementing a DVC-pipeline makes all of data loading, preprocessing, training, performance evaluation, etc. fully reproducible.
 The gist is that DVC _versions_ training data, (hyper-)parameters, code and trained models _together_.
 In particular, a DVC project resides in a Git repository, which implements all necessary versioning (see the following figure).
@@ -28,15 +28,15 @@ In particular, for each version of the pipeline, the cache contains different ve
 However, cache data is _not_ stored in the Git repository itself, but in a separate so-called remote (e.g. an Amazon S3 bucket).
 When checking out a specific version of the pipeline from the Git repository, DVC takes care of fetching cache data that matches the current pipeline version from the remote.
 
-![dvc remote](https://blog.codecentric.de/files/2019/08/dvc_remote.jpg)
+![dvc dependency management dvc remote](https://blog.codecentric.de/files/2019/08/dvc_remote.jpg)
 
-## <a name="createplayground"></a>Creating the playground
+## <a name="createplayground"></a>DVC dependency management: Creating the playground
 
 As for the original walkthrough, [the GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now provides a readily usable working environment.
 In this environment, you can interactively create the playground number classifier project (or let a script perform all actions for you).
 Compared to the original walkthrough, the following extensions were implemented.
-First, the playground project is pushed to GitHub such that it can easily be referenced as a DVC dependency.
-Secondly, the playground's DVC cache is now pushed to a remote in an Amazon S3 bucket, such that binary data (e.g. trained models) can also be accessed from the internet.
+First, the playground project is pushed to GitHub so that it can easily be referenced as a DVC dependency.
+Secondly, the playground's DVC cache is now pushed to a remote in an Amazon S3 bucket, so that binary data (e.g. trained models) can also be accessed from the internet.
 
 To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management), change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
 You will be 'logged in' to a newly created container.
@@ -71,7 +71,7 @@ $$ # from here on, DVC can interact with your bucket
 Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
 
 Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough_extended.sh`).
-Since the given URI start with `s3://`, DVC knows that the remote should reside in a bucket.
+Since the given URI starts with `s3://`, DVC knows that the remote should reside in a bucket.
 The `-d` flag tells DVC that this remote should be used by default.
 Once the bucket is added, the DVC pipeline's configuration in `.dvc/config` should be saved, by committing the changes to Git.
 
@@ -80,7 +80,7 @@ $$ dvc remote add -d playground_remote s3://<YOUR_BUCKET_NAME>
 $$ git add .dvc/config # save the configuration of the newly added remote
 ```
 
-## Using a DVC project as a dependency
+## Using a DVC project as a DVC dependency
 We discuss how to access data from a DVC project.
 To be more precise, we want to access some (possibly binary) file processed and/or created by the pipeline defined in the project.
 E.g., we want to access some "source" data like a set of training images, or the model created by the training stage.
@@ -93,7 +93,7 @@ Intuitively, `dvc get` simply downloads data.
 
 ### Setup
 The working environment given in section [Creating the playground](#createplayground) should also be used to follow along interactively with the commands presented in this section.
-If you did not create your own playground project, when setting up the environment, you can ignore all steps regarding `scripts/walkthrough_extended.sh`.
+If you did not create your own playground project when setting up the environment, you can ignore all steps regarding `scripts/walkthrough_extended.sh`.
 
 All commands discussed from here on are also available in `/home/dvc/scripts/deps_management.sh` in the working environment.
 
@@ -258,14 +258,14 @@ Preparing to download data from 's3://dvc-deps-management.bertatcodecentric.de/d
 [...]
 ```
 
-After the command has executed, the correct version of `model.h5` was downloaded and is available in your filesystem.
+After the command has executed, the correct version of `model.h5` was downloaded and is available in your file system.
 
-# Wrap-up
-We introduced you to the DVC commands `get`, `import`, and `update` which allow you manage artifacts from a DVC project as dependencies.
+## Wrap-up
+We introduced you to the DVC commands `get`, `import`, and `update` which allow you to manage artifacts from a DVC project as dependencies.
 While `get` simply downloads an artifact, `import` and `update` enable you to track the version of the artifact in your software project.
 
-In an upcoming post, we demo these features in a real world application.
+In an upcoming post, we will demo these features in a real-world application.
 We're happy to meet you there :-D
 
-# Notes
+## Notes
 <sup>1</sup><a name="footnote1"></a> To install `boto3` alongside DVC, issue the command `pip install 'dvc[s3]'`, preferably in a <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>.
