@@ -7,7 +7,7 @@ We discuss two _brand-new_<sup>[1](#footnote1)</sup> DVC features, namely `dvc g
 - Think of `dvc import` as `dvc get` plus managing version information for the downloaded artifact.
 I.e., using `dvc import` you can manage artifacts from another DVC project like you would manage a software library dependency in a software engineering project.
 
-![pipeline](https://blog.codecentric.de/files/2019/08/logo-owl-readme.png)
+![pipeline](https://blog.codecentric.de/files/2019/08/logo-new-readme.png)
 
 You might want to browse through the walkthrough first, such that you can get the most out of this post.
 For those of you in a hurry, we provide a quick [recap of the original walkthrough](#recap).
