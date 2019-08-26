@@ -1,7 +1,7 @@
 This post is a follow up to [A walkthrough of DVC](https://blog.codecentric.de/en/2019/03/walkthrough-dvc/) and deals with managing dependencies between DVC projects.
 In particular, this follow up is about importing specific versions of an artifact (e.g. a trained model or a dataset) from one DVC project into another.
 
-We discuss two _brand-new_<sup>[1](#footnote1)</sup> DVC features, namely `dvc get` and `dvc import`.
+We discuss two recently added DVC features, namely `dvc get` and `dvc import`.
 - Intuitively, `dvc get` downloads an artifact from a DVC project (where DVC takes care of resolving the project's DVC cache and its remotes).
  E.g., `dvc get` is a very helpful tool in delivering your model to production in a CI/CD pipeline.
 - Think of `dvc import` as `dvc get` plus managing version information for the downloaded artifact.
@@ -266,18 +266,3 @@ While `get` simply downloads an artifact, `import` and `update` enable you to tr
 
 In an upcoming post, we demo these features in a real world application.
 We're happy to meet you there :-D
-
-# Notes
-
-<sup>1</sup><a name="footnote1"></a> If `dvc get` and `dvc import` are not available in your DVC version, you can try a recent version of DVC like so:
-
-```bash
-$ # create sandbox for recent DVC version
-$ pip install virtualenv # if not already installed
-$ cd /tmp
-$ virtualenv sandbox
-
-$ # open sandbox and install recent DVC version into it
-$ source sandbox/bin/activate
-$ pip install git+git://github.com/iterative/dvc@0.55.0
-```
