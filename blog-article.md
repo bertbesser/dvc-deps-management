@@ -32,13 +32,13 @@ When checking out a specific version of the pipeline from the Git repository, DV
 
 ## <a name="createplayground"></a>DVC dependency management: Creating the playground
 
-As for the original walkthrough, [the GitHub repository](https://github.com/bbesser/dvc-deps-management) for the post you are reading now provides a readily usable working environment.
+As for the original walkthrough, <a href="https://github.com/bbesser/dvc-deps-management" rel="noopener noreferrer" target="_blank">the GitHub repository</a> for the post you are reading now provides a readily usable working environment.
 In this environment, you can interactively create the playground number classifier project (or let a script perform all actions for you).
 Compared to the original walkthrough, the following extensions were implemented.
 First, the playground project is pushed to GitHub so that it can easily be referenced as a DVC dependency.
 Secondly, the playground's DVC cache is now pushed to a remote in an Amazon S3 bucket, so that binary data (e.g. trained models) can also be accessed from the internet.
 
-To prepare the working environment (see the following code block), clone [the GitHub repository](https://github.com/bbesser/dvc-deps-management), change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
+To prepare the working environment (see the following code block), clone <a href="https://github.com/bbesser/dvc-deps-management" rel="noopener noreferrer" target="_blank">the GitHub repository</a>, change into the cloned directory, and start the working environment using `./start_environment.sh bash`.
 You will be 'logged in' to a newly created container.
 From the prompt in the container, configure variables at the top of the file `/home/dvc/scripts/walkthrough_extended.sh` to match your GitHub repository and S3 bucket, where both must be empty and writable.
 (Details of the bucket configuration are discussed in section [Configuring the S3 remote](#s3remote).)
@@ -68,7 +68,7 @@ $$ export AWS_ACCESS_KEY_ID=<YOUR_PLAYGROUND_KEY>
 $$ export AWS_SECRET_ACCESS_KEY=<YOUR_PLAYGROUND_SECRET>
 $$ # from here on, DVC can interact with your bucket 
 ```
-Other means of configuring S3 bucket access for DVC/`boto3` are [documented here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html).
+Other means of configuring S3 bucket access for DVC/`boto3` are <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html" rel="noopener noreferrer" target="_blank">documented here</a>.
 
 Adding an S3 bucket as a remote to a DVC project is the same as adding any other type of remote (see the following code block or `scripts/walkthrough_extended.sh`).
 Since the given URI starts with `s3://`, DVC knows that the remote should reside in a bucket.
@@ -106,7 +106,7 @@ $$ export GIT_REPO=<YOUR_PLAYGROUND_REPO_URL>
 $$ export AWS_ACCESS_KEY_ID=<YOUR_PLAYGROUND_KEY>
 $$ export AWS_SECRET_ACCESS_KEY=<YOUR_PLAYGROUND_SECRET>
 ```
-If you did not create your own playground project, you can use [this publicly available playground project](https://github.com/bbesser/dvc-deps-management-playground).
+If you did not create your own playground project, you can use <a href="https://github.com/bbesser/dvc-deps-management-playground" rel="noopener noreferrer" target="_blank">this publicly available playground project</a>.
 Its URL and credentials are readily configured in `/home/dvc/scripts/deps_management.sh`.
 (Note that the given AWS credentials provide no permissions except read access to the S3 bucket.)
 
@@ -227,7 +227,7 @@ model.h5.dvc # the model is not part of the git repository
 How does she obtain `model.h5` without reproducing the entire pipeline?
 She can reproduce the import stage using `dvc repro`.
 (At the time of writing, the stage file has to be manually unlocked/locked.
-However, [there are plans](https://github.com/iterative/dvc/issues/2423) to implement the use case in `dvc pull`.)
+However, <a href="https://github.com/iterative/dvc/issues/2423" rel="noopener noreferrer" target="_blank">there are plans</a> to implement the use case in `dvc pull`.)
 
 ```bash
 $$ dvc unlock model.h5.dvc
@@ -268,4 +268,4 @@ In an upcoming post, we will demo these features in a real-world application.
 We're happy to meet you there :-D
 
 ## Notes
-<sup>1</sup><a name="footnote1"></a> To install `boto3` alongside DVC, issue the command `pip install 'dvc[s3]'`, preferably in a <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>.
+<sup>1</sup><a name="footnote1"></a> To install `boto3` alongside DVC, issue the command `pip install 'dvc[s3]'`, preferably in a <a href="https://docs.python.org/3/tutorial/venv.html" rel="noopener noreferrer" target="_blank">virtual environment</a>.
