@@ -59,9 +59,7 @@ $$ /home/dvc/scripts/walkthrough_extended.sh # creates the playground DVC projec
 ### <a name="s3remote"></a>Configuring the S3 remote
 In this section, we take a quick look at the part of the `scripts/walkthrough_extended.sh` script that sets up an S3 bucket as the DVC cache's remote.
 
-In order to enable DVC to access a bucket, two preparations have to be done.
-1. First, the `boto3` library must be installed, using `pip install boto3`. (This is already done in the working environment provided with this article.)
-1. Secondly, `boto3` must be given access to the bucket.
+To access an S3 bucket, DVC relies on the `boto3` library<sup>[1](#footnote1)</sup>, i.e., `boto3` must be given access to the bucket.
 Therefore, AWS credentials can be provided as environment variables like in the following code block.
 (For the provided working environment, this configuration has to be done at the top of the `scripts/walkthrough_extended.sh` script.)
 
@@ -265,3 +263,6 @@ While `get` simply downloads an artifact, `import` and `update` enable you to tr
 
 In an upcoming post, we demo these features in a real world application.
 We're happy to meet you there :-D
+
+# Notes
+<sup>1</sup><a name="footnote1"></a> To install `boto3` alongside DVC, issue the command `pip install 'dvc[s3]'`, preferably in a <a href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>.
