@@ -7,7 +7,7 @@ scikit-learn==0.20.1
 scipy==1.1.0
 tensorflow==1.14.0
 mlxtend==0.15.0.0
-ipython==7.3.0
+ipython==7.16.3
 imageio==2.5.0
 gitpython==2.1.11
 dvc[s3]==0.55.0
