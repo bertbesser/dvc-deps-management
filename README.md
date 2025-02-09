@@ -1,6 +1,7 @@
 # DVC dependendy management
 
 This is the companion repository for the article [DVC dependency management](https://www.codecentric.de/wissens-hub/blog/dvc-dependency-management).
+
 It is a follow up of [A walkthrough of DVC](https://github.com/bbesser/dvc-walkthrough) and builds upon it.
 Hence, it is advisable to first follow along the walkthrough before getting the most out of this project.
 
